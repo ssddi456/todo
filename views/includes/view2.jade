@@ -1,0 +1,14 @@
+.animated.next(data-bind="css:{prev:isPrev(1),next:isNext(1),cur:getView(1)}")
+  .container(data-bind="if:curTodo() != ''")
+    .form-horizontal
+      .control-group
+        button.btn(data-bind='click:toggleView.bind($root,"0")') 
+          span.icon-chevron-left
+          | back
+        input.span7(type="text",data-bind='value:curTodo().content')
+      .control-group
+        .controls
+          .input-append
+            input.span7#addtodo(size="16",type="text",data-bind="value:newSubTodo")
+            button.btn(type="button",data-bind="click:addSubTodo") add
+    include todolist.jade

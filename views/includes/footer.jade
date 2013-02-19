@@ -1,0 +1,10 @@
+.navbar.navbar-fixed-bottom
+  .nav-inner
+    .container
+      ul.nav
+        li(data-bind='css:{active:getView("0")},click:toggleView.bind($root,"0")')
+          a view1
+        li(data-bind='if:curTodo()!="",css:{active:getView("1")},click:toggleView.bind($root,"1")')
+          a view2
+        li(data-bind='css:{active:getView("2")},click:toggleView.bind($root,"2")')
+          a view3

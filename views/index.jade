@@ -1,0 +1,18 @@
+extends ../../views/layout-nav
+
+append content-nav
+  .container
+    .brand to do list
+block content-body-wrapper
+  .center
+    .animate-container
+      include includes/view1.jade
+      include includes/view2.jade
+      include includes/view3.jade
+  .footer
+    include includes/footer.jade
+append js
+  script(src="lib/require.js",data-main='todo/source/app.js')
+
+append css
+  link(href='todo/skin/app.less',rel="stylesheet",type="text/css")

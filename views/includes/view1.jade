@@ -1,0 +1,11 @@
+.animated(data-bind="css:{prev:isPrev(0),next:isNext(0),cur:getView(0)}")
+  .container
+    .form-horizontal
+      .control-group
+        label.control-label(for="addtodo") add a todo
+        .controls
+          .input-append
+            input.span7#addtodo(size="16",type="text",data-bind="value:newTodo")
+            button.btn(type="button",data-bind="click:addTodo") add
+    include filterbtns.jade
+    include todolist.jade
