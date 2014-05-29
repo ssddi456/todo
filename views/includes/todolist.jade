@@ -6,11 +6,7 @@
         th 
           | &nbsp; content
         th
-          .form-inline
-            input(type="checkbox",data-bind="checked: progressFilter") 
-            | &nbsp; progress
-            input.input-small(type="number",data-bind="value: progressMin")
-            input.input-small(type="number",data-bind="value: progressMax")
+          | &nbsp; progress
         th 
     tbody(data-bind="foreach:todos_to_show")
       tr
@@ -19,13 +15,27 @@
             button.btn(data-bind="click : $root.showSub.bind($root, $data)")
               span.icon-chevron-right
         td
-          input.span6(type="text",data-bind="value:content")
+          input.span5(type="text",data-bind="value:content")
         td
           .span3.progress.progress-striped(data-bind="click:$root.setProgress")
             .bar(data-bind="attr:{style:$root.getProgress($data)}") &nbsp;
         td
-          span.label(data-bind="css:{'label-important': isImportant},click : $root.toggle.bind($data,'isImportant')") important
-          &nbsp;
-          span.label(data-bind="css:{'label-warning'  : isUrgent},   click : $root.toggle.bind($data,'isUrgent')") urgent
-          &nbsp;
+          span.label(data-bind="css:{\
+                                  'label-important': isImportant\
+                                  },\
+                                toggleClick : isImportant")
+            | important
+          | &nbsp;
+          span.label(data-bind="css:{\
+                                  'label-warning'  : isUrgent\
+                                },\
+                                toggleClick : isUrgent")
+            | urgent
+          | &nbsp;
+          span.label(data-bind="css:{\
+                                  'label-success'  : completed\
+                                },\
+                                toggleClick : completed")
+            | completed
+          | &nbsp;
           span.icon-remove(data-bind="click : $root.removeTodo")

@@ -1,8 +1,55 @@
+require.config({
+  paths : {
+    ko : 'http://cdn.staticfile.org/knockout/3.1.0/knockout-debug'
+  }
+})
+
 require([
+  './postChannel',
+  'ko',
+  './koModel',
   'viewToggle'
-  ],function(
-    viewToggle
-    ) {
+],function(
+  postChannel,
+  ko,
+  koModel,
+  viewToggle
+){
+
+  var localStorage = {
+    getItem : function( name, cb ){
+      postChannel({
+        type : 'getItem',
+        name : name
+      },cb);
+    },
+    setItem : function( name, data, cb){
+      postChannel({
+        type : 'setItem',
+        data : data,
+        name : name
+      },cb);
+    }
+  }
+  ko.bindingHandlers.toggleClick = {
+    init: function (element, valueAccessor) {
+        var value = valueAccessor();
+
+        ko.utils.registerEventHandler(element, "click", function () {
+            value(!value());
+        });
+    }
+  };
+
+  var tools = (function(){
+    var i = 0;
+    return {
+      uuid : function() {
+        return Date.now() + '';
+      }
+    };
+  })();
+
   var Todo = new koModel({
     selected   : false,
     content    : '',
@@ -10,16 +57,77 @@ require([
     progress   : 0,
     isUrgent   : false,
     id         : '',
-    parent     : ''
+    parent     : '',
+    completed  : false
   });
 
   var app = {};
 
-  app.inited= false;
   app.init = function(){
-    app.getTodos();
-    app.inited= true;
-  }
+      var flagmap = {
+    'showAll'          : true,
+
+    'showImportant'    : true,
+    'showNotImportant' : true,
+
+    'showUrgent'       : true,
+    'showNotUrgent'    : true,
+
+    'showCompleted'    : false
+  };
+
+  var settingKey = 'filterSetting';
+    localStorage.getItem(settingKey,function( err, settings ) {
+      settings = settings && JSON.parse(settings) || {};
+      var keys = [];
+      function saving () {
+        var ret = {};
+        keys.forEach(function( key ) {
+          ret[key] = app[key]();
+        });
+        localStorage.setItem(settingKey, JSON.stringify(ret));
+      }
+      for( var flag in flagmap ){
+        app[flag] = ko.observable( settings[flag] == undefined ? 
+                                    flagmap[flag]:
+                                    settings[flag] );
+        app[flag].subscribe(saving);
+      }
+
+      
+      app.todos_to_show = ko.computed(function(){
+        var parent = '';
+        if( app.curTodo() != '' ){
+          parent = app.curTodo().id();
+        }
+        var todos = _.filter(app.todos(),function(todo){
+                      return todo.parent() == parent;
+                    });
+        if(app.showAll()){
+          return todos
+        }
+        if(!app.showAll() && app.showCompleted()){
+          todos = _.filter(todos,function(todo){
+                    return todo.completed();
+                  });
+        }
+        var showi  = app.showImportant();
+        var showni = app.showNotImportant();
+        var showu  = app.showUrgent();
+        var shownu = app.showNotUrgent();
+
+        return _.filter( todos,function(todo){
+          var progress = todo.progress();
+          return ( todo.isImportant() ? showi : showni ) &&
+                 ( todo.isUrgent()    ? showu : shownu )
+        });
+      });
+
+      app.getTodos();
+      ko.applyBindings(app);
+    });
+  };
+
   app.todos = ko.observableArray([]);
 
   app.newTodo    = ko.observable('');
@@ -30,7 +138,6 @@ require([
     var item = Todo.createBind({content:app.newTodo()})
     item.id(tools.uuid());
     app.todos.push(item);
-    //item.subscribe(app.updateCache);
     app.newTodo('');
   }
   app.addSubTodo = function(){
@@ -52,14 +159,15 @@ require([
     app.toggleView(1);
   }
   app.getTodos = function() {
-    var res = localStorage.getItem('todo');
-    res = JSON.parse(res);
-    res.forEach(function(todo){
-      if( todo.id == ''){
-        todo.id = tools.uuid();
-      }
+    localStorage.getItem('todo', function( err, res ){
+      res = JSON.parse(res) || [];
+      res.forEach(function(todo){
+        if( todo.id == ''){
+          todo.id = tools.uuid();
+        }
+      });
+      app.todos(Todo.toKoArray(res));
     });
-    app.todos(Todo.toKoArray(res));
     return;
   };
 
@@ -81,67 +189,8 @@ require([
     p = ~~((p*10)+0.5)/10;
     todo.progress(p);
   }
-  app.progressMin = ko.observable(0);
-  app.progressMax = ko.observable(100);
-// flags
-  app.progressFilter   = ko.observable(false);
-
-  app.showAll          = ko.observable(true);
-  
-  app.showImportant    = ko.observable(true);
-  app.showNotImportant = ko.observable(true);
-  
-  app.showUrgent       = ko.observable(true);
-  app.showNotUrgent    = ko.observable(true);
-
-  var flagmap = {
-    'a':'showAll',         
-
-    'i':'showImportant',   
-    'ni':'showNotImportant',
-
-    'u':'showUrgent',      
-    'nu':'showNotUrgent'
-  }
-  app.toggle = function( flag ) {
-    var n = flag;
-    if( flag in flagmap){
-      n = flagmap[flag];
-    }
-    this[n](!this[n]());
-  }
-
-  
-  app.todos_to_show = ko.computed(function(){
-    var parent = '';
-    if( app.curTodo() != '' ){
-      parent = app.curTodo().id();
-    }
-    if(app.showAll()){
-      return _.filter(app.todos(),function(todo){
-        return todo.parent() == parent;
-      });
-    }
-    var progressFilter = app.progressFilter();
-    var progressMin    = app.progressMin()/100;
-    var progressMax    = app.progressMax()/100;
-    var showi  = app.showImportant();
-    var showni = app.showNotImportant();
-    var showu  = app.showUrgent();
-    var shownu = app.showNotUrgent();
-    return _.filter(app.todos(),function(todo){
-      var progress = todo.progress();
-      return ( todo.isImportant() ? showi : showni ) &&
-             ( todo.isUrgent()    ? showu : shownu ) &&
-             ( progressFilter ? 
-                progress <= progressMax &&
-                progress >= progressMin : true ) &&
-             ( todo.parent() == parent )
-    });
-  });
 
   viewToggle(app);
   
-  ko.applyBindings(app);
   app.init();
 });

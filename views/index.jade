@@ -1,4 +1,7 @@
-extends ../../views/layout-nav
+extends ./layout-nav
+
+append heads
+  title todo list
 
 append content-nav
   .container
@@ -8,11 +11,10 @@ block content-body-wrapper
     .animate-container
       include includes/view1.jade
       include includes/view2.jade
-      include includes/view3.jade
   .footer
     include includes/footer.jade
 append js
-  script(src="lib/require.js",data-main='todo/source/app.js')
+  script(src="http://cdn.staticfile.org/require.js/2.1.11/require.js",data-main='./source/app.js')
 
 append css
-  link(href='todo/skin/app.less',rel="stylesheet",type="text/css")
+  link(href='./skin/app.css',rel="stylesheet",type="text/css")

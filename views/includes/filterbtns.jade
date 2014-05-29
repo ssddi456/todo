@@ -1,10 +1,50 @@
 .btn-toolbar.container
   .btn-group
-    button.btn(data-bind="click:toggle.bind($root,'a'),css:{active:showAll}") all
+    button.btn(data-bind="toggleClick : showAll,\
+                          css:{\
+                            active:showAll\
+                          }")
+      | all
   .btn-group
-    button.btn(data-bind="click:toggle.bind($root,'i'),css:{active:showImportant,disabled:showAll},attr:{disabled:showAll}") important
-    button.btn(data-bind="click:toggle.bind($root,'ni'),css:{active:showNotImportant,disabled:showAll},attr:{disabled:showAll}") not important
+    button.btn(data-bind="toggleClick : showImportant,\
+                          css:{\
+                            active:showImportant\
+                          },\
+                          attr:{\
+                            disabled:showAll\
+                          }")
+      | important
+    button.btn(data-bind="toggleClick : showNotImportant,\
+                          css:{\
+                            active:showNotImportant\
+                          },\
+                          attr:{\
+                            disabled:showAll\
+                          }") 
+      | not important
   .btn-group
-    button.btn(data-bind="click:toggle.bind($root,'u'),css:{active:showUrgent,disabled:showAll},attr:{disabled:showAll}") urgent
-    button.btn(data-bind="click:toggle.bind($root,'nu'),css:{active:showNotUrgent,disabled:showAll},attr:{disabled:showAll}") not urgent
+    button.btn(data-bind="toggleClick : showUrgent,\
+                          css:{\
+                            active:showUrgent\
+                          },\
+                          attr:{\
+                            disabled:showAll\
+                          }")
+      | urgent
+    button.btn(data-bind="toggleClick : showNotUrgent,\
+                          css:{\
+                            active:showNotUrgent\
+                          },\
+                          attr:{\
+                            disabled:showAll\
+                          }") 
+      | not urgent
   .btn-group
+    button.btn(data-bind="toggleClick : showCompleted,\
+                          css:{\
+                            active:showCompleted\
+                          },\
+                          attr:{\
+                            disabled:showAll\
+                          }")
+      | completed

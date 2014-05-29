@@ -1,0 +1,16 @@
+mixin require( source )
+  script(src="/lib/require.js",data-main= source )
+
+mixin css(source)
+  link(href=source,rel="stylesheet",type="text/css")
+
+mixin appmain( apppath )
+  script(src="/lib/require.js",data-main= "./source/app.js")
+
+mixin appcss(apppath)
+  link(href="./skin/app.less",rel="stylesheet",type="text/css")
+
+mixin ko(conditions)
+  != "<!-- ko " + conditions +"-->"
+  block
+  // /ko

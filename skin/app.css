@@ -1,0 +1,58 @@
+body {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Chrome and Safari */
+  -moz-backface-visibility: hidden;
+  /* Firefox */
+}
+.center {
+  width: 100%;
+  position: absolute;
+  top: 60px;
+  bottom: 60px;
+  margin: 0 auto;
+  overflow: auto;
+}
+.footer {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  height: 40px;
+  background: black;
+}
+.brand {
+  cursor: default;
+}
+.nav a {
+  cursor: pointer;
+}
+.prev {
+  left: -100%;
+}
+.next {
+  left: 100%;
+}
+.cur {
+  left: 0;
+}
+.animate-container {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.animated {
+  width: 100%;
+  position: absolute;
+  -webkit-transform: left;
+  -moz-transform: left;
+  -ms-transform: left;
+  -o-transform: left;
+  transition: left 0.5s ease-out;
+  -moz-transition: left 0.5s ease-out;
+  -webkit-transition: left 0.5s ease-out;
+  -o-transition: left 0.5s ease-out;
+  -ms-transition: left 0.5s ease-out;
+}
+.label {
+  cursor: pointer;
+}

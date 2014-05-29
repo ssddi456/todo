@@ -1,0 +1,19 @@
+{
+  "name": "tasksPanel"
+  ,"version": "0.3500"
+  ,"description": "有进度条的计划表"
+  , "manifest_version": 2
+  ,"browser_action":{
+    "default_icon":"skin/icon.png"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "sandbox": {
+    "pages": [
+      "index.html"
+    ],
+    "content_security_policy":
+    "sandbox allow-scripts; script-src 'self' http://cdn.staticfile.org 'unsafe-eval' 'unsafe-inline' chrome-extension-resource:; object-src 'self'"
+  }
+}

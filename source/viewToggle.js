@@ -1,5 +1,8 @@
 define([
-  ],function() {
+  'ko'
+],function(
+  ko
+){
   return function( app ){
     var views = app.views = [
       ko.observable(true),

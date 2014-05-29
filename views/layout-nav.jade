@@ -1,0 +1,11 @@
+extend layout
+
+append css
+  style
+append content
+  div.navbar.navbar-inverse.navbar-fixed-top
+      div.navbar-inner
+        block content-nav
+  block content-body-wrapper
+    div(style="position:absolute;top:60px;bottom:0;width:100%;")
+      block content-body

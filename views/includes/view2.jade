@@ -1,4 +1,8 @@
-.animated.next(data-bind="css:{prev:isPrev(1),next:isNext(1),cur:getView(1)}")
+.animated.next(data-bind="css:{\
+                            prev:isPrev(1),\
+                            next:isNext(1),\
+                            cur:getView(1)\
+                          }")
   .container(data-bind="if:curTodo() != ''")
     .form-horizontal
       .control-group
