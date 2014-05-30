@@ -79,7 +79,7 @@ require([
   var settingKey = 'filterSetting';
     localStorage.getItem(settingKey,function( err, settings ) {
       settings = settings && JSON.parse(settings) || {};
-      var keys = [];
+      var keys = Object.keys(flagmap);
       function saving () {
         var ret = {};
         keys.forEach(function( key ) {
@@ -106,9 +106,9 @@ require([
         if(app.showAll()){
           return todos
         }
-        if(!app.showAll() && app.showCompleted()){
+        if(!app.showAll() && !app.showCompleted() ){
           todos = _.filter(todos,function(todo){
-                    return todo.completed();
+                    return !todo.completed();
                   });
         }
         var showi  = app.showImportant();
