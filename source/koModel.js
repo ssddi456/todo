@@ -9,16 +9,18 @@ define([
     this.names = _.keys(model);
     this.subscribed = [];
     this.oncreate = undefined;
-    var self = this;
-    this.trigger =function() {
-      var me = this;
-      var args = arguments;
-      _.each(self.subscribed,function(handle) {
-        handle.apply(me,arguments);
-      });
-    }
+
+    this.trigger = this.trigger.bind(this);
   }
   var kmproto = koModel.prototype;
+
+  kmproto.trigger=function() {
+    var self = this;
+    var args = arguments;
+    _.each(self.subscribed,function(handle) {
+      handle.apply(self,args);
+    });
+  }
   kmproto.subscribe=function(handle) {
     this.subscribed.push(handle);
   }
@@ -76,10 +78,13 @@ define([
     if( this.oncreate != undefined ){
       this.oncreate.call(ret,data);
     }
+
     ret.subscribe=function(handle) {
       var me = this;
       _.each(self.names,function(name) {
-        me[name].subscribe(handle);
+        me[name].subscribe(function() {
+          handle(name, me);
+        });
       });
       return this;
     }

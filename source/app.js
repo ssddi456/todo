@@ -5,11 +5,13 @@ require.config({
 })
 
 require([
+  './action_record',
   './postChannel',
   'ko',
   './koModel',
   'viewToggle'
 ],function(
+  action_record,
   postChannel,
   ko,
   koModel,
@@ -42,10 +44,12 @@ require([
   };
 
   var tools = (function(){
-    var i = 0;
     return {
       uuid : function() {
-        return Date.now() + '';
+        function S4() {
+           return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+        }
+        return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
       }
     };
   })();
@@ -64,19 +68,19 @@ require([
   var app = {};
 
   app.init = function(){
-      var flagmap = {
-    'showAll'          : true,
+    var flagmap = {
+      'showAll'          : true,
 
-    'showImportant'    : true,
-    'showNotImportant' : true,
+      'showImportant'    : true,
+      'showNotImportant' : true,
 
-    'showUrgent'       : true,
-    'showNotUrgent'    : true,
+      'showUrgent'       : true,
+      'showNotUrgent'    : true,
 
-    'showCompleted'    : false
-  };
+      'showCompleted'    : false
+    };
 
-  var settingKey = 'filterSetting';
+    var settingKey = 'filterSetting';
     localStorage.getItem(settingKey,function( err, settings ) {
       settings = settings && JSON.parse(settings) || {};
       var keys = Object.keys(flagmap);
@@ -125,6 +129,12 @@ require([
 
       app.getTodos();
       ko.applyBindings(app);
+
+      Todo.subscribe(function( changedname, changeditem ){
+        if( changedname == 'content' ){
+          action_record(changeditem, 'update');
+        }
+      });
     });
   };
 
@@ -136,6 +146,7 @@ require([
   app.curTodo  = ko.observable('');
   app.addTodo  = function() {
     var item = Todo.createBind({content:app.newTodo()})
+    action_record(item,'new');
     item.id(tools.uuid());
     app.todos.push(item);
     app.newTodo('');
@@ -145,10 +156,12 @@ require([
     item.id(tools.uuid());
     item.parent(app.curTodo().id());
     app.todos.push(item);
+    action_record(item,'new');
     app.newSubTodo('');
   }
   app.removeTodo = function( todo ){
     app.todos.remove(todo);
+    action_record(item,'remove');
   };
   app.showSub  = function (todo){
     app.curTodo(todo);
