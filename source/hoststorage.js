@@ -1,3 +1,11 @@
+function getArray( name ) {
+  var length = localStorage.getItem( name +'::length');
+  var ret = [];
+  for(var i = 0; i < length; i++){
+    ret.push( localStorage.getItem ( name +'::' + i ));
+  }
+  return JSON.stringify( ret );
+}
  window.onmessage = function( e ) {
   var ac = e.data;
   var echo = { key : ac.key };
@@ -15,7 +23,10 @@
       localStorage.setItem ( ac.name +'::' + ( lastitem ++ ), ac.data );
       localStorage.setItem ( ac.name +'::length', lastitem ++ );
       echo.data = lastitem;
-      break
+      break;
+    case 'getArray' : 
+      echo.data = getArray( ac.name );
+      break;
   }
 
   e.source.postMessage( echo, '*');

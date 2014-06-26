@@ -5,12 +5,14 @@ require.config({
 })
 
 require([
+  './timeline',
   './action_record',
   './postChannel',
   'ko',
   './koModel',
   'viewToggle'
 ],function(
+  timeline,
   action_record,
   postChannel,
   ko,
