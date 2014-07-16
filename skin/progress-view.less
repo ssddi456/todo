@@ -1,0 +1,73 @@
+.progress-line{
+  font-size: 20px;
+  padding: 10px;
+  border-bottom: 1px solid #E3E3E3;
+  position: relative;
+  &.head{
+    border-bottom: 4px solid #666666;
+  }
+
+  overflow: auto;
+  .name-head,.name{
+    width: 20%;
+    text-align: right;
+    padding-right: 20px;
+  }
+
+  .timeline-head,.timeline{
+    top         : 10px;
+    left        : 20%;
+    width       : 80%;
+    height      : 38px;
+    overflow    : hidden;
+    position    : absolute;
+
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: -moz-none;
+         -o-user-select: none;
+            user-select: none;
+
+    .tick {
+      height       : 28px + 10px;
+      border-right : 1px solid #B6B6B6;
+      position     : absolute;
+    }
+    .date{
+      font-size : 12px;
+      position  : absolute;
+      bottom    : 5px;
+      width     : 62px;
+      color     : #B6B6B6;
+
+      -webkit-user-select: text;
+       -khtml-user-select: text;
+         -moz-user-select: text;
+           -o-user-select: text;
+              user-select: text;
+    }
+  }
+  
+  &.project-root{
+    font-weight: bolder;
+  }
+
+  .name{
+  }
+
+  .timeline{
+    
+  }
+
+  .timepeer{ 
+    background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-color: #428bca;
+    background-size : 40px 40px;
+    margin: 4px 0;
+    height: 20px;
+    border-radius: 2px;
+  }           
+}

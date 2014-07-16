@@ -1,20 +1,15 @@
-extends ./layout-nav
+include mixins
 
-append heads
-  title todo list
-
-append content-nav
-  .container
-    .brand to do list
-block content-body-wrapper
-  .center
-    .animate-container
-      include includes/view1.jade
-      include includes/view2.jade
-  .footer
-    include includes/footer.jade
-append js
-  script(src="http://cdn.staticfile.org/require.js/2.1.11/require.js",data-main='./source/app.js')
-
-append css
-  link(href='./skin/app.css',rel="stylesheet",type="text/css")
+doctype
+html
+  head
+    block css
+      link(href="http://cdn.staticfile.org/twitter-bootstrap/3.0.0/css/bootstrap.css",rel="stylesheet",type="text/css")
+    block heads
+  body
+    block content
+    block js
+      script(src="http://cdn.staticfile.org/underscore.js/1.6.0/underscore-min.js")
+      //if ie
+        script(src="http://cdn.staticfile.org/es5-shim/2.3.0/es5-sham.js")
+        script(src="http://cdn.staticfile.org/json2/20130526/json2.js")

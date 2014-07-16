@@ -1,10 +1,11 @@
-extend layout
+extend index
 
 append css
   style
 append content
-  div.navbar.navbar-inverse.navbar-fixed-top
-      div.navbar-inner
+  .navbar.navbar-inverse.navbar-fixed-top
+    .container
+      .navbar-brand
         block content-nav
   block content-body-wrapper
     div(style="position:absolute;top:60px;bottom:0;width:100%;")

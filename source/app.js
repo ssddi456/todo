@@ -1,10 +1,12 @@
 require.config({
   paths : {
-    ko : 'http://cdn.staticfile.org/knockout/3.1.0/knockout-debug'
+    ko : 'http://cdn.staticfile.org/knockout/3.1.0/knockout-debug',
+    jquery:'http://cdn.staticfile.org/jquery/1.10.0/jquery'
   }
 })
 
 require([
+  'jquery',
   './timeline',
   './action_record',
   './postChannel',
@@ -12,6 +14,7 @@ require([
   './koModel',
   'viewToggle'
 ],function(
+  $,
   timeline,
   action_record,
   postChannel,

@@ -1,0 +1,31 @@
+extend layout-nav
+
+append heads
+  title project progress
+  link(rel="stylesheet", href="skin/progress-view.css")
+
+append content-nav
+  | progress view
+
+
+mixin progress_line()
+  // ko foreach : projects
+  .progress-line.project-root
+    .name(data-bind="text: name")
+    .timeline
+      .timepeer(data-bind="style:{\
+                                  'margin-left':left() + 'px',\
+                                   width : (width() + '').indexOf('%') != -1 ?\
+                                                  width() :\
+                                                  width() + 'px'\
+                                }")
+  // /ko
+append content-body
+  .progress-line.head
+    .name-head
+      | project name
+    .timeline-head
+  +progress_line()
+
+append js
+  script(src="http://cdn.staticfile.org/require.js/2.1.11/require.js",data-main='./source/progress-view.js')

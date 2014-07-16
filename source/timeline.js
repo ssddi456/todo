@@ -1,25 +1,59 @@
 define([
+  'underscore',
+  './util',
   'ko'
 ],function(
+  __,
+  util,
   ko
 ){
   
-  var timeline = {
-    range : ko.observableArray(),
-  }
+  return util.koModule({
+    start : 0,
+    end   : 0,
+    name  : '',
+    left  : 0,
+    width : 0
+  },['start','end'],{
+    update : function( ticks ) {
+      var self = this;
+      var left, width;
+      var start, end; 
 
-  function last_three_weeks () {
-    var ret = [new Date()];
-    var now = ret[0].getTime();
+      var start_datetime =util.format_datetime(self.start);
+      var end_datetime = util.format_datetime(self.end);
 
-    var len = 3 * 7;
-    var day = 24*60*60;
+      // find the tick
+      ticks.forEach(function(tick) {
+        var datetime =  util.format_datetime(tick[1]);
+        if( datetime == start_datetime ){
+          start = tick;
+        }
+        if( datetime == end_datetime ){
+          end = tick
+        }
+      });
 
-    for(var i = 0; i < len; i++ ){
-      ret.unshift( new Date( now -= day ));
+      if( start ){
+        left = start[0];
+      } else {
+        left = 0;
+      }
+
+      if( end ){
+        width =  end[0] - left;
+      } else {
+        width = '100%'
+      }
+      // if not fount, check if out of range
+      if( !start && !end ){
+        if( this.end < _.last(ticks)[1] || this.start > _.first(ticks)[1] ){
+          width = 0;
+        }
+      }
+      // update view
+      this.left( left );
+      this.width( width );
     }
-    return ret;
-  }
-
-  console.log( last_three_weeks () );
+  });
 });
