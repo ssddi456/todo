@@ -21,28 +21,54 @@ define([
     this.max_tick  = 7;
     
     this.container = el;
+    this.middle    = el.width() / 2;
     this.ticks     = [];
   }
 
   var fn = dateline.prototype;
+  
+  fn.normalize_scale = function() {
+    this.scale = Math.max(Math.min( 2, this.scale ),0.3);
+  };
 
+  fn.change_scale = function( scale, center ) {
+
+    var delta = this.middle - center;
+    var temp_scale = this.scale;
+
+    this.scale = scale;
+    this.normalize_scale();
+
+    if( this.scale == temp_scale ){
+      return;
+    }  
+
+    // caculated
+    // t = current - Math.floor((middle_1 - cur_pos) / interval_1 ) * day;
+    // t = current - Math.floor((middle_2 - cur_pos) / interval_2 ) * day;
+    // =>
+    // (middle_1 - cur_pos) * interval_2 = (middle_2 - cur_pos) * interval_1
+    // =>
+    // (middle_1 - cur_pos) * scale_1 = (middle_2 - cur_pos) * scale_2
+    // 
+    // (middle- cur_pos + offset_1 ) * scale_1 = 
+    // (middle- cur_pos + offset_2 ) * scale_2
+
+    var offset_2 = (delta + this.offset) * temp_scale / this.scale - delta;
+    this.offset = offset_2;
+  };
+  
   fn.update = function() {
     
-    this.scale = Math.max(Math.min( 2, this.scale ),0.3);
     var max_tick = this.max_tick * this.scale;
+    var total    = this.middle * 2
+    var interval = total / max_tick;
+    
+    var middle = this.middle + this.offset;
 
-    var total_width = this.container.width();
-
-    var middle = total_width / 2;
-    var interval = total_width / max_tick;
-
-    var middle = middle + this.offset;
-    var range = [0, total_width];
-
-    var start_pos = ( interval / 2 + this.offset ) % interval;
-
-    if(start_pos < 0){
-      start_pos = start_pos + interval;
+    var start_pos = middle % interval;
+    if( start_pos < 0 ){
+      start_pos = start_pos + day;
     }
 
     var tick = [];

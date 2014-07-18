@@ -44,8 +44,10 @@ define([
       e.stopPropagation();
       e.preventDefault();
       
-      var e = e.originalEvent;
-      _dateline.scale += e.deltaY / 1000;
+      var scale_center  = e.offsetX;
+
+      _dateline.change_scale( _dateline.scale + e.originalEvent.deltaY / 1000, scale_center )
+
       _dateline.update();
 
     });
