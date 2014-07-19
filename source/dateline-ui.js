@@ -1,6 +1,8 @@
 define([
+  './libs/drag',
   './dateline'
 ],function(
+  drag,
   dateline
 ){
   function dateline_ui () {
@@ -10,31 +12,18 @@ define([
   dateline_ui.create = function( el, current ) {
     var _dateline = dateline.create(el, current);
 
-    var start_offset;
-    var change;
-    var start_pos_x;
-
-    function mouse_move ( e ) {
-      delta = e.screenX - start_pos_x;
-      _dateline.offset = start_offset + delta;
-      _dateline.update();
-    }
-
-    el.on('mousedown',function(e) {
-      var self = this;
-      
-      start_offset = _dateline.offset;
-      start_pos_x = e.screenX;
-
-      document.body.addEventListener('mousemove',mouse_move,true);
-
-      document.body.addEventListener('mouseup',function() {
-        document.body.removeEventListener('mousemove',mouse_move,true);
-        self.style.cursor = 'auto';
-      },true);
-
-      this.style.cursor = 'e-resize';
-    });
+    drag(el,
+      function( drag_data ) {
+        this.style.cursor = 'e-resize';
+        drag_data.start_offset = _dateline.offset;
+      },
+      function( drag_data, e) {
+        _dateline.offset = drag_data.start_offset + drag_data.delta;
+        _dateline.update();
+      },
+      function( drag_data ) {
+        this.style.cursor = 'auto';
+      });
 
     el.on('dblclick',function(e) {
       _dateline.reset();

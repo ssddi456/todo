@@ -11,7 +11,7 @@ append content-nav
 mixin progress_line()
   // ko foreach : projects
   .progress-line.project-root
-    .name(data-bind="text: name")
+    .name(data-bind="editable_text: name")
     .timeline
       .timepeer(data-bind="style:{\
                                   'margin-left':left() + 'px',\
@@ -19,7 +19,22 @@ mixin progress_line()
                                                   width() :\
                                                   width() + 'px'\
                                 }")
+        .peer.start(data-bind="drag : {\
+                                        val     : left,\
+                                        dragend : updatetime\
+                                      }")
+        .peer.end(data-bind="drag:{\
+                                    val     : width,\
+                                    dragend : updatetime\
+                                  }")
   // /ko
+  .progress-line
+    .name
+      input(type="text", placeholder="projeck name",\
+            data-bind="value:new_project.name")
+      i.glyphs.glyphicon-plus(data-bind="click:create_new")
+    .timeline
+
 append content-body
   .progress-line.head
     .name-head

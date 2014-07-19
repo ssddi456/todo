@@ -12,12 +12,16 @@ require.config({
 })
 
 require([
+  './ko.drag',
+  './ko.editable_text',
   './util',
   './dateline-ui',
   './timeline',
   'knockout',
   'jquery'
 ],function(
+  kodrag,
+  koeditable_text,
   util,
   dateline,
   timeline,
@@ -25,13 +29,29 @@ require([
   $
 ){
   
+  var now = Date.now();
 
   
   var dateline = dateline.create( $('.timeline-head'), new Date() );
+  
   var vm =  { 
               projects : ko.observableArray(),
+              new_project : {
+                name  : ko.observable(''),
+                start : now,
+                end   : now + util.n_days(1)
+              },
+              create_new : function() {
+                console.log(  ko.toJS( this.new_project ) );
+                var _timeline =  new timeline( ko.toJS( this.new_project ) );
+                _timeline.update(dateline.ticks);
+                console.log( ko.toJS(_timeline) );
+                
+                this.projects.push( _timeline );
+
+                this.new_project.name('');
+              }
             };
-  var now = Date.now();
   var projects = [{
       name  : '123',
       start : now - util.n_days(3),
@@ -46,13 +66,12 @@ require([
               var _timeline = new timeline( project );
 
               _timeline.update( dateline.ticks );
-
               vm.projects.push( _timeline );
               return _timeline;
             });
 
   dateline.container.on('dateline-change',function( e, data ) {
-    projects.forEach(function( _timeline ) {
+    vm.projects().forEach(function( _timeline ) {
       _timeline.update(data);
     });
   });

@@ -5,6 +5,7 @@
   position: relative;
   &.head{
     border-bottom: 4px solid #666666;
+    position: static;
   }
 
   overflow: auto;
@@ -12,6 +13,12 @@
     width: 20%;
     text-align: right;
     padding-right: 20px;
+
+    input{
+      font-size: 16px;
+      margin: 0;
+      margin-bottom: -1px;
+    }
   }
 
   .timeline-head,.timeline{
@@ -27,16 +34,19 @@
        -moz-user-select: -moz-none;
          -o-user-select: none;
             user-select: none;
-
+  }
+  .timeline-head{
+    height: 100%;
     .tick {
-      height       : 28px + 10px;
+      height       : 100%;
       border-right : 1px solid #B6B6B6;
       position     : absolute;
+      opacity      : 0.5;
     }
     .date{
       font-size : 12px;
       position  : absolute;
-      bottom    : 5px;
+      top       : 38px - 5px - 14px;
       width     : 62px;
       color     : #B6B6B6;
 
@@ -47,6 +57,7 @@
               user-select: text;
     }
   }
+
   
   &.project-root{
     font-weight: bolder;
@@ -68,6 +79,22 @@
     background-size : 40px 40px;
     margin: 4px 0;
     height: 20px;
-    border-radius: 2px;
+    border-radius: 10px;
+    position: relative;
+    .peer{
+      width: 16px;
+      height: 16px;
+      top:2px;
+      border-radius: 10px;
+      position: absolute;
+      background: #fff;
+
+      &.start{
+        left: 2px;
+      }
+      &.end{
+        right: 2px;
+      }
+    }
   }           
 }

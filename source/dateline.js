@@ -43,7 +43,7 @@ define([
       return;
     }  
 
-    // caculated
+    // 
     // t = current - Math.floor((middle_1 - cur_pos) / interval_1 ) * day;
     // t = current - Math.floor((middle_2 - cur_pos) / interval_2 ) * day;
     // =>
@@ -68,8 +68,13 @@ define([
 
     var start_pos = middle % interval;
     if( start_pos < 0 ){
-      start_pos = start_pos + day;
+      start_pos = start_pos + interval;
     }
+    console.group('info');
+    console.log( 'start_pos        :', start_pos);
+    console.log( 'interval         :', interval);
+    console.log( 'total            :', total);
+    console.groupEnd();
 
     var tick = [];
     var _ticks = this.ticks;
@@ -79,9 +84,9 @@ define([
 
     var current = this.current.getTime();
     current = current - current % day;
-
+    console.log( (middle - start_pos) / interval );
     // canculate pos by pixal to secs
-    var start_time = current - Math.floor((middle - start_pos) / interval) * day;
+    var start_time = current - Math.round((middle - start_pos) / interval) * day;
     
     for( var i = 0; i < max_tick+1 ; i++ ){
       left = start_pos + i * interval;

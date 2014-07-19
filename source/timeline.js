@@ -54,6 +54,46 @@ define([
       // update view
       this.left( left );
       this.width( width );
+      this.ticks = ticks;
+    },
+    updatetime : function( drag_data ){
+      var delta_t;
+
+      var left= this.left();
+      var width = this.width();
+
+      var fin = drag_data.start_offset + drag_data.delta;
+      var after;
+      var before = _.find(this.ticks,function( tick, index, arr ) {
+        var next;
+        if( tick[0] <= fin ){
+          if( next = arr[index+1] ){
+            if( next[0] > fin ){
+              after = next;
+              return true;
+            }
+            return false;
+          } else {
+            return true;
+          }
+        }
+      });
+      if( !before ){
+        before = this.ticks[0];
+        after  = this.ticks[1];
+      } else if( !after ){
+        after = [null,Infinity];
+      }
+
+      var choosed =  fin - before[0] < fin - after[0] ? before : after;
+      if( fin == left ){
+        delta_t = this.start - choosed[1];
+        this.start = choosed[1];
+        this.end = this.end - delta_t;
+      } else {
+        this.end  = choosed[1];
+      }
+
     }
   });
 });

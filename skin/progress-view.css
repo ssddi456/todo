@@ -7,12 +7,19 @@
 }
 .progress-line.head {
   border-bottom: 4px solid #666666;
+  position: static;
 }
 .progress-line .name-head,
 .progress-line .name {
   width: 20%;
   text-align: right;
   padding-right: 20px;
+}
+.progress-line .name-head input,
+.progress-line .name input {
+  font-size: 16px;
+  margin: 0;
+  margin-bottom: -1px;
 }
 .progress-line .timeline-head,
 .progress-line .timeline {
@@ -28,17 +35,19 @@
   -o-user-select: none;
   user-select: none;
 }
-.progress-line .timeline-head .tick,
-.progress-line .timeline .tick {
-  height: 38px;
+.progress-line .timeline-head {
+  height: 100%;
+}
+.progress-line .timeline-head .tick {
+  height: 100%;
   border-right: 1px solid #B6B6B6;
   position: absolute;
+  opacity: 0.5;
 }
-.progress-line .timeline-head .date,
-.progress-line .timeline .date {
+.progress-line .timeline-head .date {
   font-size: 12px;
   position: absolute;
-  bottom: 5px;
+  top: 19px;
   width: 62px;
   color: #B6B6B6;
   -webkit-user-select: text;
@@ -59,5 +68,20 @@
   background-size: 40px 40px;
   margin: 4px 0;
   height: 20px;
-  border-radius: 2px;
+  border-radius: 10px;
+  position: relative;
+}
+.progress-line .timepeer .peer {
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  border-radius: 10px;
+  position: absolute;
+  background: #fff;
+}
+.progress-line .timepeer .peer.start {
+  left: 2px;
+}
+.progress-line .timepeer .peer.end {
+  right: 2px;
 }
