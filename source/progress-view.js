@@ -12,16 +12,16 @@ require.config({
 })
 
 require([
-  './ko.drag',
-  './ko.editable_text',
+  '../bower_components/ko_custom_bindings/ko.editable_text',
+  '../bower_components/ko_custom_bindings/ko.drag',
   './util',
   './dateline-ui',
   './timeline',
   'knockout',
   'jquery'
 ],function(
-  kodrag,
   koeditable_text,
+  kodrag,
   util,
   dateline,
   timeline,
@@ -42,10 +42,13 @@ require([
                 end   : now + util.n_days(1)
               },
               create_new : function() {
-                console.log(  ko.toJS( this.new_project ) );
-                var _timeline =  new timeline( ko.toJS( this.new_project ) );
+                var new_project = ko.toJS( this.new_project );
+                if( new_project.name == '' ){
+                  return;
+                }
+
+                var _timeline =  new timeline( new_project );
                 _timeline.update(dateline.ticks);
-                console.log( ko.toJS(_timeline) );
                 
                 this.projects.push( _timeline );
 

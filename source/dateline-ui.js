@@ -1,5 +1,5 @@
 define([
-  './libs/drag',
+  '../bower_components/ko_custom_bindings/libs/drag',
   './dateline'
 ],function(
   drag,

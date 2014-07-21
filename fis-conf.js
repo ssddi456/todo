@@ -1,6 +1,6 @@
 fis.config.merge({
   project : {
-    exclude : /\.(html|js|css|json|png|md)/i
+    exclude : /(bower_component|node_modules|\.(html|js|css|json|png|md))/i
   },
   //插件配置节点
   modules : {

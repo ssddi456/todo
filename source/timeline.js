@@ -43,7 +43,7 @@ define([
       if( end ){
         width =  end[0] - left;
       } else {
-        width = '100%'
+        width = ticks.total - left;
       }
       // if not fount, check if out of range
       if( !start && !end ){
@@ -52,8 +52,9 @@ define([
         }
       }
       // update view
-      this.left( left );
-      this.width( width );
+      
+      this.left( left = util.clamp(left, 0, ticks.total) );
+      this.width( util.clamp(width, 0, ticks.total - left) );
       this.ticks = ticks;
     },
     updatetime : function( drag_data ){
@@ -63,6 +64,13 @@ define([
       var width = this.width();
 
       var fin = drag_data.start_offset + drag_data.delta;
+
+      if( fin == left ){
+
+      } else {
+        fin += left;
+      }
+
       var after;
       var before = _.find(this.ticks,function( tick, index, arr ) {
         var next;
@@ -82,18 +90,34 @@ define([
         before = this.ticks[0];
         after  = this.ticks[1];
       } else if( !after ){
-        after = [null,Infinity];
+        after = [Infinity,null];
       }
 
-      var choosed =  fin - before[0] < fin - after[0] ? before : after;
+      var choosed =  fin - before[0] < after[0] - fin ? before : after;
+      console.group();
+      console.log( util.format_datetime(before[1],'MM dd'), fin - before[0]);
+      console.log( util.format_datetime(after[1], 'MM dd'), after[0] - fin);
+      console.log( choosed == before ? 'before' : 'after');
+
       if( fin == left ){
         delta_t = this.start - choosed[1];
         this.start = choosed[1];
         this.end = this.end - delta_t;
+        this.left( left = util.clamp(choosed[0], 0, this.ticks.total));
       } else {
-        this.end  = choosed[1];
+        if( choosed[1] <= this.start ){
+          this.end = this.start + util.n_days(1);
+        } else {
+          this.end = choosed[1];
+        }
       }
 
+      console.log('segs', Math.round((this.end - this.start) / util.n_days(1)));
+
+      width = Math.round((this.end - this.start) / util.n_days(1)) * this.ticks.interval;
+      console.log('final width', util.clamp(width, 0, this.ticks.total - left) );
+      this.width( util.clamp(width, 0, this.ticks.total - left));
+      console.groupEnd();
     }
   });
 });

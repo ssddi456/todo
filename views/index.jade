@@ -10,6 +10,7 @@ html
     block content
     block js
       script(src="http://cdn.staticfile.org/underscore.js/1.6.0/underscore-min.js")
-      //if ie
-        script(src="http://cdn.staticfile.org/es5-shim/2.3.0/es5-sham.js")
-        script(src="http://cdn.staticfile.org/json2/20130526/json2.js")
+      <!--[if IE]>
+      script(src="http://cdn.staticfile.org/es5-shim/2.3.0/es5-sham.js")
+      script(src="http://cdn.staticfile.org/json2/20130526/json2.js")
+      <![endif]-->

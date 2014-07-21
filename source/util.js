@@ -103,6 +103,10 @@ define([
   util.n_days = function( n ) {
     return n * day;      
   }
+
+  util.clamp = function( cur, min, max) {
+    return Math.max(min,Math.min(cur,max));
+  }
   return util;
 
 });

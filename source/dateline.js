@@ -6,7 +6,7 @@ define([
   $
 ){
 
-  var day = 1e3 * 60 * 60 * 24;
+  var day = util.n_days(1);
 
   //roadmap
   //  label and ticks
@@ -99,7 +99,8 @@ define([
 
       _ticks.push([left,timestamp]);
     }
-
+    this.ticks.interval = interval;
+    this.ticks.total    = total;
     this.container
       .html( tick.join('') )
       .trigger('dateline-change', [this.ticks]);
