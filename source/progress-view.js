@@ -12,6 +12,7 @@ require.config({
 })
 
 require([
+  './project_storage',
   '../bower_components/ko_custom_bindings/ko.editable_text',
   '../bower_components/ko_custom_bindings/ko.drag',
   './util',
@@ -20,6 +21,7 @@ require([
   'knockout',
   'jquery'
 ],function(
+  project_storage,
   koeditable_text,
   kodrag,
   util,
@@ -30,10 +32,41 @@ require([
 ){
   
   var now = Date.now();
+  timeline = timeline.derive(function(){
+              var self = this;
+              if( this.idx == -1 ){
+                this.idx =  project_storage.push('projects', { 
+                              name : this.name(),
+                              start : this.start,
+                              end  : this.end
+                            }) - 1;
+              }
+              this.name.subscribe(function( name ) {
+                project_storage.set('projects.' + this.idx + '.name', name );
+              });
+            });
+  var timeline_prototype_updatetime = timeline.prototype.updatetime;
+  timeline.prototype.updatetime = function(){
+    timeline_prototype_updatetime.apply(this, arguments);      
+    project_storage.set('projects.' + this.idx + '.start', this.start);
+    project_storage.set('projects.' + this.idx + '.end',   this.end);
+  };
 
-  
   var dateline = dateline.create( $('.timeline-head'), new Date() );
-  
+
+  dateline.scale     = project_storage.get('ui.scale')    || dateline.scale;
+  dateline.offset    = project_storage.get('ui.offset')   || dateline.offset;
+  dateline.max_tick  = project_storage.get('ui.max_tick') || dateline.max_tick;
+
+
+  var dateline_update = dateline.update;
+  dateline.update = function(){
+    dateline_update.apply(this, arguments);
+    project_storage.set('ui.scale', this.scale);
+    project_storage.set('ui.offset', this.offset);
+  };
+  dateline.update();
+
   var vm =  { 
               projects : ko.observableArray(),
               new_project : {
@@ -55,17 +88,10 @@ require([
                 this.new_project.name('');
               }
             };
-  var projects = [{
-      name  : '123',
-      start : now - util.n_days(3),
-      end   : now + util.n_days(1)
-    },{
-      name  : '456',
-      start : now - util.n_days(3),
-      end   : now + util.n_days(2)
-    }];
+  var projects = project_storage.get('projects') || [];
 
-  projects = projects.map(function( project ) {
+  projects = projects.map(function( project, idx ) {
+              project.idx = idx;
               var _timeline = new timeline( project );
 
               _timeline.update( dateline.ticks );

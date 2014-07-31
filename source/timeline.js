@@ -1,20 +1,23 @@
 define([
+  './project_storage',
   'underscore',
   './util',
   'ko'
 ],function(
+  project_storage,
   __,
   util,
   ko
 ){
   
   return util.koModule({
+    idx   : -1,
     start : 0,
     end   : 0,
     name  : '',
     left  : 0,
     width : 0
-  },['start','end'],{
+  },['start','end', 'idx'],{
     update : function( ticks ) {
       var self = this;
       var left, width;
@@ -116,8 +119,10 @@ define([
 
       width = Math.round((this.end - this.start) / util.n_days(1)) * this.ticks.interval;
       console.log('final width', util.clamp(width, 0, this.ticks.total - left) );
-      this.width( util.clamp(width, 0, this.ticks.total - left));
       console.groupEnd();
+      
+      this.width( util.clamp(width, 0, this.ticks.total - left));
+
     }
-  });
+  })
 });

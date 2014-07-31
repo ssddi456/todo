@@ -1,0 +1,22 @@
+extend ./layout-nav
+
+append heads
+  title practice record
+  link(rel="stylesheet", href="skin/practice-view.css")
+
+append content-nav
+  | practice view
+
+append content-body
+  .practice-view
+    .date-list(data-bind="foreach: date_items")
+      .date-item(data-bind="text: day,css:{'current' : $index() == $parent.date_items().length - 1}")
+    .content(data-bind="with:current_day")
+      // ko foreach : practices
+      .glyphs.glyphicon-plus
+      .name(data-bind="text: name")
+      .number(data-bind="drag:{val : number, dragend : update_number},text:v_number")
+      // /ko
+append js
+  script(src="./bower_components/requirejs/require.js",data-main='./source/practice-view.js')
+  script(src="http://127.0.0.1:35729/livereload.js")

@@ -1,7 +1,9 @@
 define([
+  './project_storage',
   './util',
   'jquery'
 ],function(
+  project_storage,
   util,
   $
 ){
@@ -23,6 +25,12 @@ define([
     this.container = el;
     this.middle    = el.width() / 2;
     this.ticks     = [];
+
+    var self = this;
+    $(window).on('resize',function() {
+      self.middle = el.width() / 2;
+      self.update();
+    });
   }
 
   var fn = dateline.prototype;
@@ -104,6 +112,7 @@ define([
     this.container
       .html( tick.join('') )
       .trigger('dateline-change', [this.ticks]);
+
   };
   fn.reset = function() {
     this.offset = 0;
