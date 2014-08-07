@@ -1,13 +1,18 @@
 require.config({
   paths : {
-    ko : 'http://cdn.staticfile.org/knockout/3.1.0/knockout-debug',
-    jquery:'http://cdn.staticfile.org/jquery/1.10.0/jquery'
+    ko         : 'http://cdn.staticfile.org/knockout/3.1.0/knockout-debug',
+    jquery     : 'http://cdn.staticfile.org/jquery/1.10.0/jquery',
+    underscore : 'http://cdn.staticfile.org/underscore.js/1.6.0/underscore'
+  },
+  map :{
+    '*' :{
+      knockout : 'ko'
+    }
   }
 })
 
 require([
   'jquery',
-  './timeline',
   './action_record',
   './postChannel',
   'ko',
@@ -15,7 +20,6 @@ require([
   'viewToggle'
 ],function(
   $,
-  timeline,
   action_record,
   postChannel,
   ko,
