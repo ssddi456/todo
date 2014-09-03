@@ -1,0 +1,55 @@
+extend ./layout-nav
+
+block css 
+  link(href="http://cdn.staticfile.org/twitter-bootstrap/3.1.0/css/bootstrap.css",rel="stylesheet",type="text/css")
+
+append heads
+  title practice record
+  link(rel="stylesheet", href="skin/project-view.css")
+
+append content-nav
+  | practice view
+
+append content-body
+  .container
+    .row
+      .col-sm-6
+        h1(data-bind="text: title")
+      .col-sm-6
+        h1.pull-right
+          // ko if !watching
+          button.btn.btn-primary watch
+          // /ko
+          // ko if watching
+          button.btn.btn-primary going
+          span(data-bind="text: time_passed")
+          // /ko
+    p.lead(data-bind="text: description")
+    form.form-horizontal(role='form')
+      .form-group
+        label.col-sm-2.control-label(for='inputPassword3') total time
+        .col-sm-10
+          .input-group
+            input.form-control.text-right.form-control(type='number', 
+                placeholder='time',
+                data-bind="value: total_time")
+            span.input-group-addon hours
+
+      .form-group
+        label.col-sm-2.control-label(for='inputPassword3') time spend
+        .col-sm-10
+          .progress
+            .progress-bar(style='width: 60%;')
+      .form-group
+        label.col-sm-2.control-label(for='inputPassword3') progress
+        .col-sm-10
+          .progress
+            .progress-bar(style='width: 60%;')
+      .form-group
+        label.col-sm-2.control-label(for='inputPassword3') dealine
+        .col-sm-10
+          input#inputPassword3.form-control(type='date', placeholder='dealine')
+
+append js
+  script(src="./bower_components/requirejs/require.js",data-main='./source/project-view.js')
+  script(src="http://127.0.0.1:35729/livereload.js")
