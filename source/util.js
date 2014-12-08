@@ -79,24 +79,51 @@ define([
   util.koModule = function( properties, skips, prototype ) {
     var keys = Object.keys(properties); 
     skips = skips ||[];
+    var ob_keys = keys.filter(function( k ) {
+      return skips.indexOf(k) == -1;
+    });
     var ret = function( init ) {
-      var data = $.extend({}, properties, init);
+      var data = $.extend(this, properties, init);
       var self =  this;
-      keys.forEach(function( k ){
-        if( skips.indexOf(k) != -1 ){
-          self[k] = data[k];
-        } else {
-          self[k] = $.isArray(data[k]) ? 
-                      ko[ 'observableArray' ]( data[k].slice(0) ) :
-                      ko[ 'observable' ]( data[k] );
-        }
+      ob_keys.forEach(function( k ){
+        self[k] = $.isArray(self[k]) ? 
+                    ko[ 'observableArray' ]( self[k].slice(0) ) :
+                    ko[ 'observable' ]( self[k] );
       });
     }
 
     ret.derive = derive_binding;
-    $.extend( ret.prototype, prototype);
+
+    $.extend( ret.prototype,{
+      unobserve : function() {
+        var self = this;
+        self.unobserved = true;
+        ob_keys.forEach(function(k) {
+          try{
+            self[k] = self[k]()
+          } catch(e){
+            console.log( e );
+          }
+        });
+      }
+    }, prototype);
     return ret;
   };
+  util.klass = function( properties, prototype ) {
+    var keys = Object.keys(properties); 
+    var ret = function( init ) {
+      var data = $.extend(this, properties, init);
+      Object.keys(data).forEach(function( k ) {
+        if( Array.isArray(data[k]) ){
+          data[k] = data[k].slice(0);
+        }
+      })
+    }
+
+    ret.derive = derive_binding;
+    ret.prototype = prototype;
+    return ret;  
+  }
 
   var day = 1e3 * 60 * 60 * 24;
 
