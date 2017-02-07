@@ -1,218 +1,70 @@
-require.config({
-  paths : {
-    ko         : 'http://cdn.staticfile.org/knockout/3.1.0/knockout-debug',
-    jquery     : 'http://cdn.staticfile.org/jquery/1.10.0/jquery',
-    underscore : 'http://cdn.staticfile.org/underscore.js/1.6.0/underscore'
-  },
-  map :{
-    '*' :{
-      knockout : 'ko'
-    }
-  }
-})
-
 require([
-  'jquery',
-  './action_record',
+  './models',
   './postChannel',
-  'ko',
-  './koModel',
-  'viewToggle'
 ],function(
-  $,
-  action_record,
+  models,
   postChannel,
-  ko,
-  koModel,
-  viewToggle
 ){
 
-  var localStorage = {
-    getItem : function( name, cb ){
-      postChannel({
-        type : 'getItem',
-        name : name
-      },cb);
+  var main_vm = new Vue({
+    el : '#main',
+    data : {
+
+      tasks : [],
     },
-    setItem : function( name, data, cb){
-      postChannel({
-        type : 'setItem',
-        data : data,
-        name : name
-      },cb);
-    }
-  }
-  ko.bindingHandlers.toggleClick = {
-    init: function (element, valueAccessor) {
-        var value = valueAccessor();
+    methods : {
 
-        ko.utils.registerEventHandler(element, "click", function () {
-            value(!value());
-        });
-    }
-  };
+      add_task : function() {
 
-  var tools = (function(){
-    return {
-      uuid : function() {
-        function S4() {
-           return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-        }
-        return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+        // 
+        // 弹个窗口或者切换view 
+        // 
+        var task = new models.task();
+
+        var callback = function() {
+          task.create(function() {
+            main_vm.tasks.unshif(task);
+          });
+        };
+
+      },
+
+      add_progress : function( task ) {
+
+        //
+        // 弹个窗口
+        //
+        var task_progress = new models.task_progress();
+        var callback = function() {
+          task_progress.save(function() {
+            task.histories.unshif( task_progress );
+          });
+        };
+
       }
-    };
-  })();
-
-  var Todo = new koModel({
-    selected   : false,
-    content    : '',
-    isImportant: false,
-    progress   : 0,
-    isUrgent   : false,
-    id         : '',
-    parent     : '',
-    completed  : false
+    }
   });
 
-  var app = {};
+  var insert_into_arr= function  ( arr_origin, start, remove, arr) {
+      var args = [start, remove].concat(arr);
 
-  app.init = function(){
-    var flagmap = {
-      'showAll'          : true,
+      arr_origin.splice.apply(arr_origin, args);
+  };
 
-      'showImportant'    : true,
-      'showNotImportant' : true,
 
-      'showUrgent'       : true,
-      'showNotUrgent'    : true,
+  models.get_all_todos( function( err, tasks ) {
+    if( err  ) {
+      console.log( err );
+      return;
+    }
 
-      'showCompleted'    : false
-    };
+    insert_into_arr( main_vm.tasks, 0, 0, tasks);
 
-    var settingKey = 'filterSetting';
-    localStorage.getItem(settingKey,function( err, settings ) {
-      settings = settings && JSON.parse(settings) || {};
-      var keys = Object.keys(flagmap);
-      function saving () {
-        var ret = {};
-        keys.forEach(function( key ) {
-          ret[key] = app[key]();
-        });
-        localStorage.setItem(settingKey, JSON.stringify(ret));
-      }
-      for( var flag in flagmap ){
-        app[flag] = ko.observable( settings[flag] == undefined ? 
-                                    flagmap[flag]:
-                                    settings[flag] );
-        app[flag].subscribe(saving);
-      }
-
-      
-      app.todos_to_show = ko.computed(function(){
-        var parent = '';
-        if( app.curTodo() != '' ){
-          parent = app.curTodo().id();
-        }
-        var todos = _.filter(app.todos(),function(todo){
-                      return todo.parent() == parent;
-                    });
-        if(app.showAll()){
-          return todos
-        }
-        if(!app.showAll() && !app.showCompleted() ){
-          todos = _.filter(todos,function(todo){
-                    return !todo.completed();
-                  });
-        }
-        var showi  = app.showImportant();
-        var showni = app.showNotImportant();
-        var showu  = app.showUrgent();
-        var shownu = app.showNotUrgent();
-
-        return _.filter( todos,function(todo){
-          var progress = todo.progress();
-          return ( todo.isImportant() ? showi : showni ) &&
-                 ( todo.isUrgent()    ? showu : shownu )
-        });
-      });
-
-      app.getTodos();
-      ko.applyBindings(app);
-
-      Todo.subscribe(function( changedname, changeditem ){
-        if( changedname == 'content' ){
-          action_record(changeditem, 'update');
-        }
+    tasks.forEach(function( task ) {
+      task.init(function() {
+        console.log( task.id, 'task.init' );
       });
     });
-  };
+  });
 
-  app.todos = ko.observableArray([]);
-
-  app.newTodo    = ko.observable('');
-  app.newSubTodo = ko.observable('');
-
-  app.curTodo  = ko.observable('');
-  app.addTodo  = function() {
-    var item = Todo.createBind({content:app.newTodo()})
-    action_record(item,'new');
-    item.id(tools.uuid());
-    app.todos.push(item);
-    app.newTodo('');
-  }
-  app.addSubTodo = function(){
-    var item = Todo.createBind({content:app.newSubTodo()});
-    item.id(tools.uuid());
-    item.parent(app.curTodo().id());
-    app.todos.push(item);
-    action_record(item,'new');
-    app.newSubTodo('');
-  }
-  app.removeTodo = function( todo ){
-    app.todos.remove(todo);
-    action_record(item,'remove');
-  };
-  app.showSub  = function (todo){
-    app.curTodo(todo);
-    console.log(
-      todo.parent(),
-      todo.id()
-    );
-    app.toggleView(1);
-  }
-  app.getTodos = function() {
-    localStorage.getItem('todo', function( err, res ){
-      res = JSON.parse(res) || [];
-      res.forEach(function(todo){
-        if( todo.id == ''){
-          todo.id = tools.uuid();
-        }
-      });
-      app.todos(Todo.toKoArray(res));
-    });
-    return;
-  };
-
-  app.updateCache = function() {
-    localStorage.setItem('todo',JSON.stringify(Todo.toDataArray(app.todos())));
-  };
-  // with all items
-  Todo.subscribe(app.updateCache);
-  app.todos.subscribe(app.updateCache);
-
-  app.getProgress     = function(todo){
-    return 'width:'+(Math.max(todo.progress(),0.05)*100).toFixed(1)+'%';
-  };
-
-  app.setProgress     = function( todo, e ){
-    var $t = $(e.target);
-    $t = $t.is('.bar')?$t.parent(): $t;
-    var p = e.offsetX / $t.width();
-    p = ~~((p*10)+0.5)/10;
-    todo.progress(p);
-  }
-
-  viewToggle(app);
-  
-  app.init();
 });

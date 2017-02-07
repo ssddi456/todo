@@ -1,19 +1,15 @@
-extends ./layout-nav
+include mixins
 
-append heads
-  title todo list
 
-append content-nav
-  | to do list
-block content-body-wrapper
-  .center
-    .animate-container
-      include includes/view1.jade
-      include includes/view2.jade
-  .footer
-    include includes/footer.jade
-append js
-  script(src="http://cdn.staticfile.org/require.js/2.1.11/require.js",data-main='./source/app.js')
+doctype
+html
+  head
+    block heads
+    block css
+      link(href="http://cdn.staticfile.org/twitter-bootstrap/3.3.6/css/bootstrap.css",rel="stylesheet",type="text/css")
+  body
+    block content
 
-append css
-  link(href='./skin/app.css',rel="stylesheet",type="text/css")
+    script(src="http://cdn.bootcss.com/vue/1.0.28/vue.min.js")
+    block js
+
