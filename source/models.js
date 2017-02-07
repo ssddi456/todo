@@ -7,6 +7,7 @@ define([
   var ret = {};
 
   var task_progress  = ret.task_progress = function( id ) {
+
     if( arguments.length == 0 ){
 
       this.id = '';
@@ -40,8 +41,8 @@ define([
       this.parent_id = id.parent_id;
       this.content = id.content;
       this.status = id.status;
-    }
 
+    }
 
   };
 
@@ -49,9 +50,9 @@ define([
   var tpp = task_progress.prototype;
   tpp.toJSON = function() {
     return {
-      id = this.id,
-      content = this.content,
-      status = this.status
+      id : this.id,
+      content : this.content,
+      status : this.status
     };
   };
 
@@ -89,7 +90,7 @@ define([
 
       this.id = '';
       this.name = '';
-      this.backgound = '';
+      this.background = '';
       /**
        * open
        * close
@@ -103,7 +104,7 @@ define([
 
       this.id = id;
       this.name = '';
-      this.backgound = '';
+      this.background = '';
       this.status = '';
 
       this.create_at = Infinity;
@@ -113,7 +114,7 @@ define([
       
       this.id = id.id;
       this.name = id.name;
-      this.backgound = id.backgound;
+      this.background = id.background;
       this.status = id.status;
 
       this.create_at = id.create_at;
@@ -121,22 +122,24 @@ define([
 
     }
 
+    this.show_detail = false;
     this.show_childs = false;
+
     this.histories = [];
   };
 
   var tp = task.prototype;
-  bp.toJSON = function() {
+  tp.toJSON = function() {
     var self = this;
     return {
       id : this.id,
       name : this.name,
-      backgound : this.backgound,
+      background : this.background,
       status : this.status,
     };
   };
 
-  bp.init = function( done ) {
+  tp.init = function( done ) {
     var self = this;
     postchannel({
       method : 'GET',
@@ -154,10 +157,10 @@ define([
     });
   };
 
-  bp.create = function( done ) {
+  tp.create = function( done ) {
     var self = this;
     postchannel({
-      command : '/tasks/create'
+      command : '/tasks/create',
       data : self.toJSON()
     }, function( err, data ) {
       if( err ){
@@ -173,10 +176,10 @@ define([
     });
   };
 
-  bp.save = function( done ) {
+  tp.save = function( done ) {
     var self = this;
     postchannel({
-      command : '/tasks/save'
+      command : '/tasks/save',
       data : self.toJSON()
     }, function( err, data ) {
       if( err ){
@@ -187,7 +190,7 @@ define([
     });
   };
 
-  bp.load_history = function( done ) {
+  tp.load_history = function( done ) {
     var self = this;
     postchannel({
       method : 'GET',
@@ -211,7 +214,7 @@ define([
     });
   };
 
-  bp.add_progress = function( progress, done ) {
+  tp.add_progress = function( progress, done ) {
     var self = this;
     progress = new task_progress(progress);
     progress.parent_id = this.id;

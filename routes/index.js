@@ -23,7 +23,7 @@ var wrap_task = function( doc ) {
   var ret = {
     id : doc._id,
     name : doc.name,
-    backgound : doc.backgound,
+    background : doc.background,
     status : doc.status,
     create_at : doc.finished_at,
     finished_at : doc.finished_at,
@@ -40,7 +40,7 @@ var unwrap_task = function( doc ) {
 
   var ret = {
     name : doc.name,
-    backgound : doc.backgound,
+    background : doc.background,
     status : doc.status,
     create_at : doc.finished_at,
     finished_at : doc.finished_at,

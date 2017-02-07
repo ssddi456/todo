@@ -4,55 +4,11 @@
 @footer_height: 40px;
 @footer_padding:20px;
 
-body{
-  .backface
-}
-.center{
-  width: 100%;
+.toast{
+  display: none;
   position: absolute;
-  top:@header_height;
-  bottom: @footer_height+@footer_padding;
-  margin: 0 auto;
-  overflow: auto;
-}
-.footer{
-  width: 100%;
-  position: absolute;
-  bottom:0;
-  height: @footer_height;
-  background: black;
-}
-
-
-.brand{
-  cursor:default;
-}
-.nav a{
-  cursor:pointer;
-}
-
-.prev{ left:-100%; }
-.next{ left:100%;  }
-.cur { left:0;     }
-
-.animate-container{
-  height: 100%;
-  overflow: hidden;
-  position: relative;
-}
-.transform (@prop,@dur: 0.5s,@ease: ease-out){
-  transition:@arguments;
-  -moz-transition:@arguments;
-  -webkit-transition:@arguments;
-  -o-transition:@arguments;
-  -ms-transition:@arguments;
-}
-.animated{
-  width: 100%;
-  position: absolute;
-  .transform (left)
-}
-
-.label{
-  cursor: pointer;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
 }

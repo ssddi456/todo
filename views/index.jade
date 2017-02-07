@@ -22,41 +22,39 @@ append content
             input.form-control(placeholder='Search')
           button.btn.btn-default(type='submit') Submit
 
+  #main
+    .container-fluid
 
-  .container-fluid
+      //- 弄一个按钮来切换配置
 
-    //- 弄一个按钮来切换配置
+      .container
+        .row
+          .col-sm-9
+            form.form-inline
+              .form-group
+                label.sr-only(for='exampleInputAmount') Amount (in dollars)
+                .input-group
+                  .input-group-addon $
+                  input#exampleInputAmount.form-control(placeholder='Amount')
+                  .input-group-addon .00
+          .col-sm-3
+            button.btn.btn-lg.btn-default 新增项目
+        .row
+          .col-sm-12
+            .collapse_arrow
+      hr
 
     .container
-      .row
-        .col-sm-9
-          form.form-inline
-            .form-group
-              label.sr-only(for='exampleInputAmount') Amount (in dollars)
-              .input-group
-                .input-group-addon $
-                input#exampleInputAmount.form-control(placeholder='Amount')
-                .input-group-addon .00
-        .col-sm-3
-          button.btn.btn-lg.btn-default 新增项目
-      .row
-        .col-sm-12
-          .collapse_arrow
-    hr
 
-  .container
-
-    .panel.panel-default
-      .panel-heading Panel heading
-      .panel-body
-        p
-          | Some default panel content here. Nulla vitae elit libero, a pharetra augue. Aenean lacinia bibendum nulla sed consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Nullam id dolor id nibh ultricies vehicula ut id elit.
-      ul.list-group
-        li.list-group-item Cras justo odio
-        li.list-group-item Dapibus ac facilisis in
-        li.list-group-item Morbi leo risus
-        li.list-group-item Porta ac consectetur ac
-        li.list-group-item Vestibulum at eros
+      .panel.panel-default(v-for="task in tasks")
+        .panel-heading
+          span(v-text="task.name")
+          | &nbsp;
+          //- 在这里搞一点按纽
+        .panel-body
+          p(v-text="task.background")
+        ul.list-group
+          li.list-group-item(v-for="progress in task.histories", v-text="progress.content")
   
   .modal(role='dialog', tabindex='-1')
     .modal-dialog(role='document')
@@ -83,6 +81,9 @@ append content
         .modal-footer
           button.btn.btn-default(type='button', data-dismiss='modal') 取消
           button.btn.btn-primary(type='button') 保存
+
+  .toast.alert.alert-success(id='toast')
+    | &nbsp;
 
 append js
   script(src="http://cdn.staticfile.org/require.js/2.1.11/require.js",data-main='./source/app.js')

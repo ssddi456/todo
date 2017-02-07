@@ -3,7 +3,7 @@ require([
   './postChannel',
 ],function(
   models,
-  postChannel,
+  postChannel
 ){
 
   var main_vm = new Vue({
@@ -50,6 +50,18 @@ require([
 
       arr_origin.splice.apply(arr_origin, args);
   };
+
+  var test_task = new models.task({
+    name : '测试',
+    background : 'ui测试'
+  });
+
+  var test_progress = new models.task_progress({
+    content : '测试进度'
+  })
+
+  test_task.histories.push(test_progress);
+  main_vm.tasks.push(test_task);
 
 
   models.get_all_todos( function( err, tasks ) {
