@@ -4,7 +4,7 @@ if( debug_name == 'index'){
   debug_name = path.basename(__dirname);
 }
 (require.main === module) && (function(){
-    process.env.DEBUG = '-send,-express:*,*';
+    process.env.DEBUG = '-storage,-send,-express:*,*';
 })()
 var debug = require('debug')(debug_name);
 

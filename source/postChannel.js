@@ -21,12 +21,23 @@ define([
       if( data.err == 0 ){
         callback(null, data);
       } else {
-        callback(null, data);
+        callback(data);
       }
     }
 
-    params.fail = function(e) {
-      callback(e);
+    params.error = function(e) {
+
+      if( e.responseText ){
+        try{
+          var data = JSON.parse(e.responseText);
+        } catch(_e){
+          callback(e);
+          return;
+        }
+        params.success(data);
+      } else {
+        callback(e);
+      }
     }
 
     $.ajax(params);

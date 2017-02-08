@@ -1,7 +1,11 @@
 require([
+  './misc',
+  './modals',
   './models',
   './postChannel',
 ],function(
+  misc,
+  modals,
   models,
   postChannel
 ){
@@ -21,26 +25,57 @@ require([
         // 
         var task = new models.task();
 
-        var callback = function() {
-          task.create(function() {
-            main_vm.tasks.unshif(task);
+        var callback = function( err, data ) {
+          task.create(function( err ) {
+            if( !err ){
+              main_vm.tasks.unshift(task);
+            }
           });
         };
 
+        modals.task_edit({ data : task }, callback );
+
       },
 
-      add_progress : function( task ) {
+      edit_task : function( task ) {
+        var callback = function( err, data ) {
+          task.save(function() { });
+        };
+
+        modals.task_edit({ data : task }, callback );
+
+      },
+      
+      add_task_progress : function( task ) {
 
         //
         // 弹个窗口
         //
+
         var task_progress = new models.task_progress();
-        var callback = function() {
+        task_progress.parent_id = task.id;
+
+        var callback = function( err, data ) {
+
           task_progress.save(function() {
-            task.histories.unshif( task_progress );
+            if( !err ){
+              task.histories.unshift( task_progress );
+            }
           });
         };
 
+        modals.task_progress_edit({ data : task_progress }, callback );
+
+      },
+
+      edit_task_progress : function( task_progress ) {
+        var callback = function( ) {
+          task_progress.save(function() {
+              
+          });
+        };
+
+        modals.task_progress_edit({ data : task_progress }, callback );
       }
     }
   });
@@ -50,18 +85,6 @@ require([
 
       arr_origin.splice.apply(arr_origin, args);
   };
-
-  var test_task = new models.task({
-    name : '测试',
-    background : 'ui测试'
-  });
-
-  var test_progress = new models.task_progress({
-    content : '测试进度'
-  })
-
-  test_task.histories.push(test_progress);
-  main_vm.tasks.push(test_task);
 
 
   models.get_all_todos( function( err, tasks ) {
@@ -74,7 +97,9 @@ require([
 
     tasks.forEach(function( task ) {
       task.init(function() {
-        console.log( task.id, 'task.init' );
+        task.load_history(function() {
+          console.log(  'task.init', task.id );
+        })
       });
     });
   });

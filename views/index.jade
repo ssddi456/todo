@@ -38,7 +38,10 @@ append content
                   input#exampleInputAmount.form-control(placeholder='Amount')
                   .input-group-addon .00
           .col-sm-3
-            button.btn.btn-lg.btn-default 新增项目
+            .btn-toolbar
+              .btn.btn-lg.btn-default(@click="add_task") 
+                .glyphicon.glyphicon-file(style="font-size:40px;")
+                div 新增项目
         .row
           .col-sm-12
             .collapse_arrow
@@ -49,14 +52,27 @@ append content
       .panel.panel-default(v-for="task in tasks")
         .panel-heading
           span(v-text="task.name")
-          | &nbsp;
+          | &nbsp;&nbsp;
           //- 在这里搞一点按纽
+          .btn-group
+            a.btn.btn-default(@click="edit_task(task)")
+              i.glyphicon.glyphicon-edit
+            a.btn.btn-default(@click="add_task_progress(task)")
+              i.glyphicon.glyphicon-plus
+            a.btn.btn-default
+              i.glyphicon.glyphicon-align-right
+            a.btn.btn-default
+              i.glyphicon.glyphicon-align-justify
+
         .panel-body
           p(v-text="task.background")
         ul.list-group
-          li.list-group-item(v-for="progress in task.histories", v-text="progress.content")
-  
-  .modal(role='dialog', tabindex='-1')
+          li.list-group-item(v-for="progress in task.histories")
+            .pull-right
+              i.glyphicon.glyphicon-edit(@click="edit_task_progress(progress)")
+            span(v-text="progress.content")
+
+  #task_edit.modal(role='dialog', tabindex='-1')
     .modal-dialog(role='document')
       .modal-content
         .modal-header
@@ -64,23 +80,33 @@ append content
             span(aria-hidden='true') ×
           h4.modal-title 编辑项目
         .modal-body
-          p 这里搞上新建项目的部分
+          
+          .form
+            .form-group
+              label 项目名
+              input.form-control(type='text', placeholder='项目名', name="name")
+            .form-group
+              label 项目背景
+              input.form-control(type='text', placeholder='项目背景', name="background")
+
         .modal-footer
           button.btn.btn-default(type='button', data-dismiss='modal') 取消
-          button.btn.btn-primary(type='button') 保存
+          button.btn.btn-primary(type='button', data-label="confirm") 保存
 
-  .modal(role='dialog', tabindex='-1')
+  #task_progress_edit.modal(role='dialog', tabindex='-1')
     .modal-dialog(role='document')
       .modal-content
         .modal-header
           button.close(type='button', data-dismiss='modal', aria-label='Close')
             span(aria-hidden='true') ×
-          h4.modal-title 编辑
+          h4.modal-title 编辑进度
         .modal-body
-          p 这里搞上编辑todo字条目的部分
+          .form
+            .form-group
+              input.form-control(type='text', placeholder='进度', name="content")
         .modal-footer
           button.btn.btn-default(type='button', data-dismiss='modal') 取消
-          button.btn.btn-primary(type='button') 保存
+          button.btn.btn-primary(type='button', data-label="confirm") 保存
 
   .toast.alert.alert-success(id='toast')
     | &nbsp;

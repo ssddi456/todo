@@ -83,7 +83,7 @@ proxy_methods.forEach(function( method ) {
 
     if( method == 'find' ){
       var call = function( collection ) {
-        collection.find(args[0]).toArray(args[1]);
+        collection.find.apply(collection, args.slice(0, -1)).toArray(args[args.length - 1]);
       }
       if( this.ready ){
         call( collection );

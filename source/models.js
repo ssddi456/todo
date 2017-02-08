@@ -49,23 +49,36 @@ define([
 
   var tpp = task_progress.prototype;
   tpp.toJSON = function() {
-    return {
-      id : this.id,
+    var ret = {
       content : this.content,
-      status : this.status
+      status : this.status,
+      parent_id : this.parent_id,
     };
+    if( this.id ){
+      ret.id = this.id;
+    }
+    return ret;
   };
 
   tpp.save = function( done ) {
     var self = this;
 
     postchannel({
+      method : 'POST',
       command : '/task_progress/save',
       data : this.toJSON()
     }, function( err, data ) {
       if( err ){
         done(err);
       } else {
+
+        if( !self.id && data.data ){
+          selfid = data.data.id;
+        }
+        if( !self.create_at && data.data ){
+          selfcreate_at = data.data.create_at;
+        }
+
         done();
       }
     });
@@ -131,12 +144,15 @@ define([
   var tp = task.prototype;
   tp.toJSON = function() {
     var self = this;
-    return {
-      id : this.id,
+    var ret = {
       name : this.name,
       background : this.background,
       status : this.status,
     };
+    if( this.id ){
+      ret.id = this.id;
+    }
+    return ret;
   };
 
   tp.init = function( done ) {
@@ -160,6 +176,7 @@ define([
   tp.create = function( done ) {
     var self = this;
     postchannel({
+      method : 'POST',
       command : '/tasks/create',
       data : self.toJSON()
     }, function( err, data ) {
@@ -179,6 +196,7 @@ define([
   tp.save = function( done ) {
     var self = this;
     postchannel({
+      method : 'POST',
       command : '/tasks/save',
       data : self.toJSON()
     }, function( err, data ) {
@@ -231,6 +249,7 @@ define([
 
   ret.get_all_todos = function( done ) {
     postchannel({
+      method : 'GET',
       command : '/tasks/list',
     }, function( err, data ) {
 

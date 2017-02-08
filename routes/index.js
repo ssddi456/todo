@@ -35,7 +35,7 @@ var wrap_task = function( doc ) {
 var unwrap_task = function( doc ) {
 
   var query = {
-    _id : mongodb.objectId(doc.id),
+    _id : mongodb.ObjectId(doc.id),
   };
 
   var ret = {
@@ -70,7 +70,7 @@ var wrap_task_progress = function( doc ) {
 
 var unwrap_task_progress = function( doc ) {
   var query = {
-    _id : mongodb.objectId(doc.id),
+    _id : mongodb.ObjectId(doc.id),
   };
 
   var ret = {
@@ -94,7 +94,11 @@ router.post( '/task_progress/save', function( req, resp, next ) {
   
   var task_progress = unwrap_task_progress(body);
 
-  if( body.id ){
+
+  if( !body.id ){
+
+    debug('do save task_progress, insert');
+    task_progress.doc.create_at = Date.now();
 
     task_progress_store.insert(
       task_progress.doc,
@@ -112,6 +116,7 @@ router.post( '/task_progress/save', function( req, resp, next ) {
       });
 
   } else {
+    debug('do save task_progress, update');
 
     task_progress_store.update(
       task_progress.query, 
@@ -143,9 +148,10 @@ router.get('/tasks/list', function( req, resp, next ) {
   } else {
     filter.status =  'open';
   }
-
+  debug('start fetch tasks');
   task_store.find(filter, { _id : 1 }, function( err, tasks ) {
 
+    debug('finish fetch tasks', tasks.length );
     if( !err ) {
       resp.json({ 
         err : 0,
@@ -167,7 +173,7 @@ router.get( '/tasks/load', function( req, resp, next ) {
 
   task_store.findOne({
 
-      _id : mongodb.objectId(task_id) 
+      _id : mongodb.ObjectId(task_id) 
 
     }, 
     function( err, doc ) {
@@ -192,7 +198,7 @@ router.post( '/tasks/create', function( req, resp, next ) {
   
   task.doc.create_at = Date.now();
 
-  task_store.insert( task.doc, function( err, doc ) {
+  task_store.insert( task.doc, function( err, ops ) {
     if( !err )    {
       resp.json({
         err : 0,
@@ -226,7 +232,7 @@ router.post( '/tasks/save', function( req, resp, next ) {
   });
 });
 
-router.post( '/tasks/load_history', function( req, resp, next ) {
+router.get( '/tasks/load_history', function( req, resp, next ) {
   var query = req.query;
   var body = req.body;
   var task_id = query.task_id;
@@ -235,7 +241,7 @@ router.post( '/tasks/load_history', function( req, resp, next ) {
     if( !err ){
       resp.json({
         err : 0,
-        data : doc
+        data : doc.map(wrap_task_progress)
       });
     } else {
       next(err);
