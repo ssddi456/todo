@@ -3,8 +3,13 @@ define([
 ],function(
   postchannel
 ){
+
+  function toggle ( obj, name ) {
+      obj[name] = !obj[name];
+  }
   
   var ret = {};
+  var noop = function() {};
 
   var task_progress  = ret.task_progress = function( id ) {
 
@@ -44,6 +49,8 @@ define([
 
     }
 
+    this.change_status = this.change_status.bind(this);
+
   };
 
 
@@ -58,6 +65,17 @@ define([
       ret.id = this.id;
     }
     return ret;
+  };
+  tpp.change_status = function( done ) {
+    if( this.status == 'inprogress' ){
+      this.status = 'finished';
+    } else {
+      this.status = 'inprogress';
+    }
+
+    this.save(function() {
+        
+    })    
   };
 
   tpp.save = function( done ) {
@@ -83,18 +101,6 @@ define([
       }
     });
 
-  };
-
-  tpp.done = function( done ) {
-    var self = this;
-    this.status = 'done';
-    this.save(done);
-  };
-
-  tpp.undone = function( done ) {
-    var self = this;
-    this.status = 'inprogress';
-    this.save(done);
   };
 
 
@@ -136,12 +142,41 @@ define([
     }
 
     this.show_detail = false;
-    this.show_childs = false;
+    this.show_finished = true;
+    this.show_unfinished = true;
 
     this.histories = [];
+
+    var self = this;
+
+    this.toggle_detail = function() {
+      toggle(self, 'show_detail');
+    };
+
+    this.toggle_filter_finish = function() {
+      toggle(self, 'show_finished');
+    };
+
+    this.toggle_filter_unfinish = function() {
+      console.log('call');
+      toggle(self, 'show_unfinished');
+    };
+
+    this.filter_progress = function( status ) {
+      console.log( 'filter!!!', status);
+
+      if( status == 'inprogress' ){
+        return self.show_finished;
+      } else if ( status == 'finished' ){
+        return self.show_unfinished;
+      }
+      return true;
+    };
   };
 
   var tp = task.prototype;
+
+
   tp.toJSON = function() {
     var self = this;
     var ret = {

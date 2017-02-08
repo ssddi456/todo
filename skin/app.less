@@ -1,9 +1,5 @@
 @import "./css3.less";
 
-@header_height: 60px;
-@footer_height: 40px;
-@footer_padding:20px;
-
 .toast{
   display: none;
   position: absolute;
@@ -11,4 +7,31 @@
   left: 0;
   right: 0;
   margin: 0;
+}
+
+
+.task_background {
+  white-space:pre;
+}
+
+.toolbar {
+  .btn-lg {
+    .glyphicon{
+      font-size:40px;
+    }
+  }
+}
+
+
+.task-progress_status {
+  cursor: pointer;
+  a&.disabled{
+    pointer-events: initial;
+    cursor: pointer;
+  }
+
+  &.unfinished {
+    color : white;
+    -webkit-text-stroke: black 1px;
+  }
 }

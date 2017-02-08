@@ -148,10 +148,9 @@ router.get('/tasks/list', function( req, resp, next ) {
   } else {
     filter.status =  'open';
   }
-  debug('start fetch tasks');
-  task_store.find(filter, { _id : 1 }, function( err, tasks ) {
 
-    debug('finish fetch tasks', tasks.length );
+  task_store.find(filter, { _id : 1 }, function( err, tasks ) {
+    
     if( !err ) {
       resp.json({ 
         err : 0,

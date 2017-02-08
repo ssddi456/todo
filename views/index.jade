@@ -27,7 +27,7 @@ append content
 
       //- 弄一个按钮来切换配置
 
-      .container
+      .container.toolbar
         .row
           .col-sm-9
             form.form-inline
@@ -40,7 +40,7 @@ append content
           .col-sm-3
             .btn-toolbar
               .btn.btn-lg.btn-default(@click="add_task") 
-                .glyphicon.glyphicon-file(style="font-size:40px;")
+                .glyphicon.glyphicon-file
                 div 新增项目
         .row
           .col-sm-12
@@ -59,17 +59,26 @@ append content
               i.glyphicon.glyphicon-edit
             a.btn.btn-default(@click="add_task_progress(task)")
               i.glyphicon.glyphicon-plus
-            a.btn.btn-default
-              i.glyphicon.glyphicon-align-right
-            a.btn.btn-default
-              i.glyphicon.glyphicon-align-justify
+            a.btn.btn-default(@click="task.toggle_detail")
+              i.glyphicon(:class="{ 'glyphicon-eye-open' : task.show_detail, 'glyphicon-eye-close' : !task.show_detail}").
 
-        .panel-body
-          p(v-text="task.background")
-        ul.list-group
-          li.list-group-item(v-for="progress in task.histories")
+            span.btn-group(v-if="task.show_detail")
+              a.task-progress_status.unfinished.btn.btn-default(@click="task.toggle_filter_finish", :class="{ disabled  : !task.show_finished }")
+                i.glyphicon.glyphicon-ok
+              a.task-progress_status.btn.btn-default(@click="task.toggle_filter_unfinish",:class="{ disabled  : !task.show_unfinished }")
+                i.glyphicon.glyphicon-ok
+
+        .panel-body(v-if="task.show_detail")
+          p.task_background(v-text="task.background")
+        ul.list-group(v-if="task.show_detail")
+          li.list-group-item(
+              v-for="progress in task.histories",
+              v-if=" task.filter_progress(progress.status)")
             .pull-right
               i.glyphicon.glyphicon-edit(@click="edit_task_progress(progress)")
+            span.task-progress_status(@click="progress.change_status", :class="{ unfinished : progress.status == 'inprogress' }")
+              i.glyphicon.glyphicon-ok
+            | &nbsp;
             span(v-text="progress.content")
 
   #task_edit.modal(role='dialog', tabindex='-1')
@@ -80,14 +89,13 @@ append content
             span(aria-hidden='true') ×
           h4.modal-title 编辑项目
         .modal-body
-          
           .form
             .form-group
               label 项目名
               input.form-control(type='text', placeholder='项目名', name="name")
             .form-group
               label 项目背景
-              input.form-control(type='text', placeholder='项目背景', name="background")
+              textarea.form-control(type='text', placeholder='项目背景', name="background")
 
         .modal-footer
           button.btn.btn-default(type='button', data-dismiss='modal') 取消
@@ -111,8 +119,8 @@ append content
   .toast.alert.alert-success(id='toast')
     | &nbsp;
 
+append css
+  link(href='./skin/app.less',rel="stylesheet",type="text/css")
+
 append js
   script(src="http://cdn.staticfile.org/require.js/2.1.11/require.js",data-main='./source/app.js')
-
-append css
-  link(href='./skin/app.css',rel="stylesheet",type="text/css")

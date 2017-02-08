@@ -24,6 +24,7 @@ require([
         // 弹个窗口或者切换view 
         // 
         var task = new models.task();
+        task.show_details = true;
 
         var callback = function( err, data ) {
           task.create(function( err ) {

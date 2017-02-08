@@ -12,7 +12,7 @@ define([
         params[k] = optn[k];
       }
     }
-    console.log( params );
+
     params.success = function( data ) {
       if( data.msg ){
         misc.toast(data.msg, data.err);
