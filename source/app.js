@@ -10,14 +10,9 @@ require([
   postChannel
 ){
 
-  var main_vm = new Vue({
-    el : '#main',
-    data : {
-
-      tasks : [],
-    },
+  var nav_vm = new Vue({
+    el : '#nav',
     methods : {
-
       add_task : function() {
 
         // 
@@ -37,6 +32,17 @@ require([
         modals.task_edit({ data : task }, callback );
 
       },
+    }
+  });
+
+  var main_vm = new Vue({
+    el : '#main',
+    data : {
+
+      tasks : [],
+    },
+    methods : {
+
 
       edit_task : function( task ) {
         var callback = function( err, data ) {

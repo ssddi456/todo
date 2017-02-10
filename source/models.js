@@ -4,68 +4,151 @@ define([
   postchannel
 ){
 
+
+
+  var model = function( def ) {
+
+    var update_keys = [];
+    var all_keys = [];
+    var defaults = {};
+    var type = {};
+
+    for(var k in def){
+      if( k!= 'id' && k!= '_id' && def.hasOwnProperty(k)){
+
+        all_keys.push(k);
+
+        if( typeof def[k] != 'object' ){
+          defaults[k] = def[k];
+          update_keys.push(k);
+        } else {
+
+          if( 'initial' in def[k] ){
+            defaults[k] = def[k].initial;
+            if( def[k].type ){
+              if( typeof def[k].type != 'function' ){
+                throw new Error('illegal type decleration');
+              }
+              type[k] = def[k].type;
+            }
+            if( def[k].readonly ){
+              // 不接受客户端上传的改动
+            } else {
+              update_keys.push(k);
+            }
+          } else {
+            defaults[k] = def[k];
+            update_keys.push(k);
+          }
+        }
+      }
+    }
+
+    var ret = function( id ) {
+      if( arguments.length == 0 ){
+        this.create();
+      } else if( typeof id == 'string' ){
+        this.create();
+        this.id = id;
+      } else {
+        this.create(id);
+      }
+    };
+    // looks strange
+    ret.prototype.create = function( obj ) {
+      var i = 0;
+      var len = all_keys.length;
+      var k;
+      for(;i<len;i++){
+        k = all_keys[i];
+
+        if( type[k] ){
+          this[k] = type[k](obj[k]);
+        } else {
+          this[k] = obj[k];
+        }
+      }
+      if( obj.id ){
+        this.id = obj.id;
+      }
+    };
+
+    ret.prototype.toJSON = function() {
+      var ret = {};
+      var i = 0;
+      var len = update_keys.length;
+      var k;
+      for(;i<len;i++){
+        k = update_keys[i];
+        ret[k] = this[k];
+      }
+
+      if( this.id ){
+        ret.id = this.id;
+      }
+
+      return ret;
+    };
+
+    return ret;
+  }
+
+
   function toggle ( obj, name ) {
+    if( obj[name] === 0 ){ 
+      obj[name] = 1;
+    } else if( obj[name] === 1 ){
+      obj[name] = 0;
+    } else {
       obj[name] = !obj[name];
+    }
   }
   
   var ret = {};
   var noop = function() {};
 
+  var task_progress_model = model({
+      parent_id : '',
+      content : '',
+      status : 'inprogress',
+
+      emergency : {
+        initial : 0,
+        type    : Number
+      },
+
+      important : {
+        initial : 0,
+        type    : Number
+      },
+
+      create_at : {
+        readonly : true,
+        initial : 0,
+      },
+      finished_at : {
+        readonly : true,
+        initial : 0,
+      },
+      status_change : {
+        readonly : true,
+        initial : {}
+      },
+  });
+
   var task_progress  = ret.task_progress = function( id ) {
-
     if( arguments.length == 0 ){
-
-      this.id = '';
-
-      this.create_at = Infinity;
-      this.finished_at = Infinity;
-
-      this.parent_id = '';
-      this.content = '';
-      this.status = 'inprogress';
-
-    } else if ( typeof id == 'string' ){
-
-      this.id = id;
-
-      this.create_at = Infinity;
-      this.finished_at = Infinity;
-
-      this.parent_id = '';
-      this.content = '';
-      this.status = 'inprogress';
-
+      task_progress_model.prototype.create.call(this);
     } else {
-      
-      this.id = id.id;
-
-      // readonly
-      this.create_at = id.create_at;
-      this.finished_at = id.finished_at;
-
-      this.parent_id = id.parent_id;
-      this.content = id.content;
-      this.status = id.status;
-
+      task_progress_model.prototype.create.call(this, id);
     }
-
     this.change_status = this.change_status.bind(this);
-
   };
 
 
   var tpp = task_progress.prototype;
-  tpp.toJSON = function() {
-    var ret = {
-      content : this.content,
-      status : this.status,
-      parent_id : this.parent_id,
-    };
-    if( this.id ){
-      ret.id = this.id;
-    }
-    return ret;
-  };
+  tpp.toJSON = task_progress_model.prototype.toJSON;
+
   tpp.change_status = function( done ) {
     if( this.status == 'inprogress' ){
       this.status = 'finished';
@@ -91,10 +174,10 @@ define([
       } else {
 
         if( !self.id && data.data ){
-          selfid = data.data.id;
+          self.id = data.data.id;
         }
         if( !self.create_at && data.data ){
-          selfcreate_at = data.data.create_at;
+          self.create_at = data.data.create_at;
         }
 
         done();
@@ -104,50 +187,63 @@ define([
   };
 
 
+  var task_model = model({
+    name : '',
+    background : '',
+    status : 'open',
+
+    emergency : {
+      initial : 0,
+      type    : Number
+    },
+
+    important : {
+      initial : 0,
+      type    : Number
+    },
+
+    create_at : {
+      readonly : true,
+      initial : Infinity
+    },
+    finished_at : {
+      readonly : true,
+      initial : Infinity
+    },
+    status_change : {
+      readonly : true,
+      initial : {}
+    },
+  });
+
   var task = ret.task = function( id ) {
     if( arguments.length == 0 ){
-
-      this.id = '';
-      this.name = '';
-      this.background = '';
-      /**
-       * open
-       * close
-       */
-      this.status = 'open';
-
-      this.create_at = Infinity;
-      this.finished_at = Infinity;
-
-    } else if ( typeof id == 'string' ){
-
-      this.id = id;
-      this.name = '';
-      this.background = '';
-      this.status = '';
-
-      this.create_at = Infinity;
-      this.finished_at = Infinity;
-
+      task_model.prototype.create.call(this);
     } else {
-      
-      this.id = id.id;
-      this.name = id.name;
-      this.background = id.background;
-      this.status = id.status;
-
-      this.create_at = id.create_at;
-      this.finished_at = id.finished_at;
-
+      task_model.prototype.create.call(this, id);
     }
 
     this.show_detail = false;
-    this.show_finished = true;
+    this.show_finished = false;
     this.show_unfinished = true;
 
     this.histories = [];
 
     var self = this;
+
+    this.toggle_important = function() {
+      toggle(self, 'important');
+      self.save(function() {
+          
+      });
+    };
+
+    this.toggle_emergency = function() {
+      toggle(self, 'emergency');
+      self.save(function() {
+          
+      });
+    };
 
     this.toggle_detail = function() {
       toggle(self, 'show_detail');
@@ -158,37 +254,21 @@ define([
     };
 
     this.toggle_filter_unfinish = function() {
-      console.log('call');
       toggle(self, 'show_unfinished');
     };
 
     this.filter_progress = function( status ) {
-      console.log( 'filter!!!', status);
-
       if( status == 'inprogress' ){
-        return self.show_finished;
-      } else if ( status == 'finished' ){
         return self.show_unfinished;
+      } else if ( status == 'finished' ){
+        return self.show_finished;
       }
       return true;
     };
   };
 
   var tp = task.prototype;
-
-
-  tp.toJSON = function() {
-    var self = this;
-    var ret = {
-      name : this.name,
-      background : this.background,
-      status : this.status,
-    };
-    if( this.id ){
-      ret.id = this.id;
-    }
-    return ret;
-  };
+  tp.toJSON = task_model.prototype.toJSON;
 
   tp.init = function( done ) {
     var self = this;

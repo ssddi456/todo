@@ -72,6 +72,7 @@ var proxy_methods = [
 ];
 proxy_methods.forEach(function( method ) {
   mongo_collection.prototype[method] = function() {
+    var self = this;
     if( this.closed ){
       return;
     }
@@ -82,13 +83,56 @@ proxy_methods.forEach(function( method ) {
 
 
     if( method == 'find' ){
-      var call = function( collection ) {
-        collection.find.apply(collection, args.slice(0, -1)).toArray(args[args.length - 1]);
-      }
-      if( this.ready ){
-        call( collection );
+      var rest = args.slice(0, -1);
+      var last = args[args.length - 1];
+
+      if( typeof last == 'function' ){
+        var call = function( collection ) {
+          collection.find.apply(collection, rest).toArray( last );
+        }
+        if( self.ready ){
+          call( collection );
+        } else {
+          self.queue.push(call);
+        }
       } else {
-        this.queue.push(call);
+        var _callback;
+        var _sort;
+        var _limit;
+        var _skip;
+        var call = function( collection ) {
+          var cursor = collection.find.apply(collection, args);
+          if( _sort ){
+            cursor = cursor.sort(_sort);
+          }
+          if( _limit ){
+            cursor = cursor.limit.apply(cursor, _limit)
+          }
+          cursor.toArray(_callback);
+        }
+        var ret = {
+          sort : function( sort ) {
+            _sort = sort;
+            return ret;
+          },
+          limit : function( limit ) {
+            _limit = limit;
+            return ret;  
+          },
+          exec : function( callback ) {
+            _callback = callback;
+            if( self.ready ){
+              call( collection );
+            } else {
+              self.queue.push(call);
+            }
+          },
+          skip : function( skip ) {
+            _skip = skip;
+            return ret;
+          }
+        };
+        return ret;
       }
     } else {
       if( this.ready ){

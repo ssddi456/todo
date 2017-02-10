@@ -17,81 +17,76 @@ var storage = require('../libs/storage');
 var task_store = storage('tasks', 'tasks');
 var task_progress_store = storage('tasks', 'task_progress');
 var mongodb = require('mongodb');
+var model = require('../libs/model');
 
-var wrap_task = function( doc ) {
+var task_model = model({
+  name : '',
+  background : '',
+  status : 'open',
 
-  var ret = {
-    id : doc._id,
-    name : doc.name,
-    background : doc.background,
-    status : doc.status,
-    create_at : doc.finished_at,
-    finished_at : doc.finished_at,
-  };
+  emergency : {
+    initial : 0,
+    type    : Number
+  },
 
-  return ret;
-};
+  important : {
+    initial : 0,
+    type    : Number
+  },
 
-var unwrap_task = function( doc ) {
+  create_at : {
+    readonly : true,
+    initial : Infinity
+  },
+  finished_at : {
+    readonly : true,
+    initial : Infinity
+  },
+  status_change : {
+    readonly : true,
+    initial : {}
+  },
+});
+var wrap_task = task_model.wrap;
+var unwrap_task = task_model.unwrap;
 
-  var query = {
-    _id : mongodb.ObjectId(doc.id),
-  };
+var task_progress_model = model({
+  parent_id : '',
+  content : '',
+  status : '',
 
-  var ret = {
-    name : doc.name,
-    background : doc.background,
-    status : doc.status,
-    create_at : doc.finished_at,
-    finished_at : doc.finished_at,
-  };
+  emergency : {
+    initial : 0,
+    type    : Number
+  },
 
-  return {
-    query : query,
-    doc   : ret
-  };
-};
+  important : {
+    initial : 0,
+    type    : Number
+  },
 
+  create_at : {
+    readonly : true,
+    initial : 0,
+  },
+  finished_at : {
+    readonly : true,
+    initial : 0,
+  },
+  status_change : {
+    readonly : true,
+    initial : {}
+  },
+});
 
-var wrap_task_progress = function( doc ) {
-
-  var ret = {
-    id : doc._id,
-    parent_id : doc.parent_id,
-    content : doc.content,
-    status : doc.status,
-    create_at : doc.finished_at,
-    finished_at : doc.finished_at,
-  };
-
-  return ret;
-};
-
-
-var unwrap_task_progress = function( doc ) {
-  var query = {
-    _id : mongodb.ObjectId(doc.id),
-  };
-
-  var ret = {
-    parent_id : doc.parent_id,
-    content : doc.content,
-    status : doc.status,
-    create_at : doc.finished_at,
-    finished_at : doc.finished_at,
-  };
-
-  return { 
-    query : query,
-    doc : ret
-  };
-};
+var wrap_task_progress = task_progress_model.wrap;
+var unwrap_task_progress = task_progress_model.unwrap;
 
 
 router.post( '/task_progress/save', function( req, resp, next ) {
   var query = req.query;
   var body = req.body;
-  
+
   var task_progress = unwrap_task_progress(body);
 
 
@@ -107,7 +102,7 @@ router.post( '/task_progress/save', function( req, resp, next ) {
         if( !err ){
           resp.json({
             err : 0,
-            data : ops.ops[0]
+            data : wrap_task_progress(ops.ops[0])
           });
         } else {
           next(err);
@@ -118,15 +113,33 @@ router.post( '/task_progress/save', function( req, resp, next ) {
   } else {
     debug('do save task_progress, update');
 
-    task_progress_store.update(
+    task_progress_store.findOne(
       task_progress.query, 
-      { $set : task_progress.doc }, 
-      function(err) {
+      function( err, doc ) {
 
-        if( !err ){
+        if( err ){
           resp.json({ err : 0 });
+        } else if(!doc){
+          next(new Error('recode not found'));
         } else {
-          next(err);
+
+          var old_status = doc.status;
+          var new_status = task_progress.doc.status;
+
+          if( old_status != new_status ){
+            task_progress.doc['status_change.'+ Date.now()] = new_status;
+          }
+
+          task_progress_store.update(
+            task_progress.query,
+            { $set : task_progress.doc }, 
+            function(err) {
+              if(err){
+                next(err);
+              } else {
+                resp.json({ err : 0 });
+              }
+            });
         }
 
       });
@@ -149,18 +162,20 @@ router.get('/tasks/list', function( req, resp, next ) {
     filter.status =  'open';
   }
 
-  task_store.find(filter, { _id : 1 }, function( err, tasks ) {
-    
-    if( !err ) {
-      resp.json({ 
-        err : 0,
-        tasks : tasks.map(wrap_task)
-      });
-    } else {
-      next(err);
-    }
+  task_store.find(filter, { _id : 1 })
+    .sort({ create_at : -1 })
+    .exec(function( err, tasks ) {
+      
+      if( !err ) {
+        resp.json({ 
+          err : 0,
+          tasks : tasks.map(wrap_task)
+        });
+      } else {
+        next(err);
+      }
 
-  });
+    });
 
 });
 
@@ -214,21 +229,45 @@ router.post( '/tasks/save', function( req, resp, next ) {
   var query = req.query;
   var body = req.body;
     
-  var task = unwrap_task(body);
 
   if( !body.id ){
     next(new Error('illegal task'));
     return;
   }
-  task_store.update(task.query, { $set : task.doc },function( err, doc ) {
-    if( !err )    {
-      resp.json({
-        err : 0
-      });
-    } else {
-      next(err);
-    }
-  });
+
+  var task = unwrap_task(body);
+
+  task_store.findOne(
+    task.query, 
+    function( err, doc ) {
+
+      if( err ){
+        resp.json({ err : 0 });
+      } else if(!doc){
+        next(new Error('recode not found'));
+      } else {
+
+        var old_status = doc.status;
+        var new_status = task.doc.status;
+
+        if( old_status != new_status ){
+          task.doc['status_change.'+ Date.now()] = new_status;
+        }
+
+        task_store.update(
+          task.query,
+          { $set : task.doc }, 
+          function(err) {
+            if(err){
+              next(err);
+            } else {
+              resp.json({ err : 0 });
+            }
+          });
+      }
+
+    });
+
 });
 
 router.get( '/tasks/load_history', function( req, resp, next ) {
