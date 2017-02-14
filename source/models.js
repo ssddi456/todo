@@ -59,6 +59,7 @@ define([
       var i = 0;
       var len = all_keys.length;
       var k;
+      obj = obj || defaults;
       for(;i<len;i++){
         k = all_keys[i];
 
