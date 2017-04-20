@@ -38,6 +38,12 @@ var task_model = model({
     readonly : true,
     initial : Infinity
   },
+
+  lastest_update : {
+    readonly : true,
+    initial : Infinity
+  },
+
   finished_at : {
     readonly : true,
     initial : Infinity
@@ -69,6 +75,12 @@ var task_progress_model = model({
     readonly : true,
     initial : 0,
   },
+
+  lastest_update : {
+    readonly : true,
+    initial : Infinity
+  },
+
   finished_at : {
     readonly : true,
     initial : 0,
@@ -130,6 +142,8 @@ router.post( '/task_progress/save', function( req, resp, next ) {
             task_progress.doc['status_change.'+ Date.now()] = new_status;
           }
 
+          task_progress.doc.lastest_update = Date.now();
+
           task_progress_store.update(
             task_progress.query,
             { $set : task_progress.doc }, 
@@ -141,9 +155,7 @@ router.post( '/task_progress/save', function( req, resp, next ) {
               }
             });
         }
-
       });
-
   }
 
 });
@@ -156,10 +168,10 @@ router.get('/tasks/list', function( req, resp, next ) {
 
   var query = req.query;
   var filter = {};
+
   if( query.status ){
     filter.status = query.status;
   } else {
-    filter.status =  'open';
   }
 
   task_store.find(filter, { _id : 1 })
@@ -216,7 +228,7 @@ router.post( '/tasks/create', function( req, resp, next ) {
     if( !err )    {
       resp.json({
         err : 0,
-        data : ops.ops[0]
+        data : wrap_task(ops.ops[0])
       });
     } else {
       next(err);
@@ -253,6 +265,8 @@ router.post( '/tasks/save', function( req, resp, next ) {
         if( old_status != new_status ){
           task.doc['status_change.'+ Date.now()] = new_status;
         }
+
+        task.doc.lastest_update = Date.now();
 
         task_store.update(
           task.query,

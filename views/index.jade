@@ -8,49 +8,52 @@ append content
         a.navbar-brand(href='#') Brand
 
       ul.nav.navbar-nav
-        li.active
+        li.active(@click="toggle_task_filter")
           a(href='#') List
         li
           a(href='#') Calender
 
-      form.navbar-form.navbar-left
-        .form-group
-          input.form-control(placeholder='Search')
-        button.btn.btn-default(type='submit') Submit
+      //- form.navbar-form.navbar-left
+      //-   .form-group
+      //-     input.form-control(placeholder='Search')
+      //-   button.btn.btn-default(type='submit') Submit
 
       .navbar-form.navbar-left
-        .btn.btn-default(@click="add_task") 
-          i.glyphicon.glyphicon-file
-          span 新增项目
+        .btn-toolbar
+          .btn-group
+            .btn.btn-default(@click="add_task") 
+              i.glyphicon.glyphicon-file
+              span 新增项目
 
   #main
-
-
     .container
 
       .panel.panel-default(v-for="task in tasks")
         .panel-heading
-          span(v-text="task.name")
-          | &nbsp;&nbsp;
-          .btn-group
-            a.btn.btn-sm(@click="task.toggle_emergency")
-              i.glyphicon.glyphicon-time(:class="{ emergency : task.emergency, unfinished : !task.emergency }")
-            a.btn.btn-sm(@click="task.toggle_important")
-              i.glyphicon.glyphicon-info-sign(:class="{ emergency : task.important, unfinished : !task.important }")
-          | &nbsp;&nbsp;
+          h4(v-text="task.name", v-bind:title="task.from_create")
           //- 在这里搞一点按纽
-          .btn-group
-            a.btn.btn-default(@click="edit_task(task)")
-              i.glyphicon.glyphicon-edit
-            a.btn.btn-default(@click="add_task_progress(task)")
-              i.glyphicon.glyphicon-plus
-            a.btn.btn-default(@click="task.toggle_detail")
-              i.glyphicon(:class="{ 'glyphicon-eye-open' : task.show_detail, 'glyphicon-eye-close' : !task.show_detail}").
+          .btn-toolbar
+            .btn-group
+              a.btn(@click="task.toggle_emergency")
+                i.glyphicon.glyphicon-time(:class="{ emergency : task.emergency, unfinished : !task.emergency }")
+              a.btn(@click="task.toggle_important")
+                i.glyphicon.glyphicon-info-sign(:class="{ emergency : task.important, unfinished : !task.important }")
+              a.btn(@click="task.change_status")
+                i.glyphicon.glyphicon-ok(:class="{ unfinished : task.status == 'open' }")
 
-            a.task-progress_status.btn.btn-default(@click="task.toggle_filter_finish", :class="{ disabled  : !task.show_finished }")
-              i.glyphicon.glyphicon-ok
-            a.task-progress_status.btn.unfinished.btn-default(@click="task.toggle_filter_unfinish",:class="{ disabled  : !task.show_unfinished }")
-              i.glyphicon.glyphicon-ok
+            .btn-group
+              a.btn.btn-default(@click="edit_task(task)")
+                i.glyphicon.glyphicon-edit
+              a.btn.btn-default(@click="add_task_progress(task)")
+                i.glyphicon.glyphicon-plus
+              a.btn.btn-default(@click="task.toggle_detail")
+                i.glyphicon(:class="{ 'glyphicon-eye-open' : task.show_detail, 'glyphicon-eye-close' : !task.show_detail}").
+
+            .btn-group
+              a.task-progress_status.btn.btn-default(@click="task.toggle_filter_finish", :class="{ disabled  : !task.show_finished }")
+                i.glyphicon.glyphicon-ok
+              a.task-progress_status.btn.unfinished.btn-default(@click="task.toggle_filter_unfinish",:class="{ disabled  : !task.show_unfinished }")
+                i.glyphicon.glyphicon-ok
 
         .panel-body(v-if="task.show_detail")
           p.task_background(v-text="task.background")
@@ -64,6 +67,7 @@ append content
               i.glyphicon.glyphicon-ok
             | &nbsp;
             span(v-text="progress.content")
+            span.last_update_past(v-if="progress.show_update_past()",v-text="progress.last_update_past()")
 
   #task_edit.modal(role='dialog', tabindex='-1')
     .modal-dialog(role='document')

@@ -1,9 +1,11 @@
 define([
+  './util',
   './postChannel'
 ],function(
+  util,
   postchannel
 ){
-
+  var noop =function() {};
 
 
   var model = function( def ) {
@@ -127,6 +129,12 @@ define([
         readonly : true,
         initial : 0,
       },
+
+      lastest_update : {
+        readonly : true,
+        initial : Infinity
+      },
+
       finished_at : {
         readonly : true,
         initial : 0,
@@ -144,6 +152,27 @@ define([
       task_progress_model.prototype.create.call(this, id);
     }
     this.change_status = this.change_status.bind(this);
+
+    this.show_update_past = function() {
+      if( this.status == 'finished' ){
+        return false;
+      }
+      if( this.lastest_update ){
+        var delta = Date.now() - this.lastest_update;
+
+        if( delta < util.day ){
+          return false;
+        } else {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    this.last_update_past = function() {
+      var delta = Date.now() - this.lastest_update;
+      return util.format_time(delta);
+    };
   };
 
 
@@ -157,14 +186,12 @@ define([
       this.status = 'inprogress';
     }
 
-    this.save(function() {
-        
-    })    
+    this.save(done)
   };
 
   tpp.save = function( done ) {
     var self = this;
-
+    done = done || noop;
     postchannel({
       method : 'POST',
       command : '/task_progress/save',
@@ -207,10 +234,17 @@ define([
       readonly : true,
       initial : Infinity
     },
+
+    lastest_update : {
+      readonly : true,
+      initial : Infinity
+    },
+
     finished_at : {
       readonly : true,
       initial : Infinity
     },
+
     status_change : {
       readonly : true,
       initial : {}
@@ -266,6 +300,10 @@ define([
       }
       return true;
     };
+
+    this.from_create = util.format_time((this.lastest_update || Date.now()) - this.create_at);
+
+    this.change_status = this.change_status.bind(this);
   };
 
   var tp = task.prototype;
@@ -309,8 +347,20 @@ define([
     });
   };
 
+  tp.change_status = function( done ) {
+    if( this.status == 'open' ){
+      this.status = 'finished';
+    } else {
+      this.status = 'open';
+    }
+
+    this.save(done);
+  };
+
   tp.save = function( done ) {
     var self = this;
+    done = done || noop;
+
     postchannel({
       method : 'POST',
       command : '/tasks/save',
@@ -363,10 +413,30 @@ define([
   };
 
 
-  ret.get_all_todos = function( done ) {
+  ret.get_open_todos = function( done ) {
     postchannel({
       method : 'GET',
       command : '/tasks/list',
+      data   : {
+        status : 'open'
+      }
+    }, function( err, data ) {
+
+      if( err ){
+        done(err);
+      } else {
+        done(null, data.tasks.map(function( node ) {
+          return new task(node);
+        }))
+      }
+    });
+  };
+
+
+  ret.get_all_todos = function( done ) {
+    postchannel({
+      method : 'GET',
+      command : '/tasks/list'
     }, function( err, data ) {
 
       if( err ){

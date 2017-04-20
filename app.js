@@ -6,7 +6,37 @@ if( debug_name == 'index'){
 (require.main === module) && (function(){
     process.env.DEBUG = '-storage,-send,-express:*,*';
 })()
-var debug = require('debug')(debug_name);
+
+var debug = require('debug');
+var debug_root = path.join(__dirname, './log/');
+
+function pad2( num ) {
+  num = num + '';
+  if( num.length < 2 ){
+    return '0' + num;
+  }
+  return num;
+}
+debug.log = function() {
+  var res = [].map.call(arguments,function( d ) {
+    if( typeof d =='string' ){
+      return d;
+    } else {
+      return util.inspect(d);
+    }
+  }).join(' ') + '\n';
+  if( !this._log_file_prefix ){
+    var prefix = path.join(debug_root, (this.namespace.replace(':', '_') || 'log'))
+    this._log_file_prefix = prefix;
+  }
+  var now = new Date();
+  var hour = now.getFullYear() +  pad2(now.getMonth() + 1) + 
+            pad2( now.getDate() ) + "_" + pad2( now.getHours() );
+
+  fs.appendFile( this._log_file_prefix + '.' + hour + '.log', res);
+};
+
+debug = debug(debug_name);
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -22,6 +52,11 @@ var app = express();
 
 app.set('views',path.join(__dirname,'./views') );
 app.set('view engine', 'jade');
+
+app.get('/favicon.ico', function( req, resp ) {
+    resp.status(404);
+    resp.end();
+});
 
 app.use('/source',express.static(path.join(__dirname,'./source')));
 app.use('/public',express.static(path.join(__dirname,'./public')));

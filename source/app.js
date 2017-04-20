@@ -1,9 +1,11 @@
 require([
+  './localconf',
   './misc',
   './modals',
   './models',
   './postChannel',
 ],function(
+  localconf,
   misc,
   modals,
   models,
@@ -32,13 +34,26 @@ require([
         modals.task_edit({ data : task }, callback );
 
       },
+      toggle_task_filter : function() {
+
+          var show_all = localconf.get('show_all');
+          if( show_all ){
+            show_all = 0;
+          } else {
+            show_all = 1;
+          }
+
+          localconf.set('show_all', show_all);
+
+          main_vm.init_task_list();
+
+      }
     }
   });
 
   var main_vm = new Vue({
     el : '#main',
     data : {
-
       tasks : [],
     },
     methods : {
@@ -83,8 +98,36 @@ require([
         };
 
         modals.task_progress_edit({ data : task_progress }, callback );
+      },
+      init_task_list : function() {
+          
+        var show_all = localconf.get('show_all');
+        var init_method;
+
+        if( show_all ){
+          init_method = 'get_all_todos';
+        } else {
+          init_method = 'get_open_todos'
+        }
+
+        models[init_method]( function( err, tasks ) {
+          if( err  ) {
+            console.log( err );
+            return;
+          }
+
+          insert_into_arr( main_vm.tasks, 0, main_vm.tasks.length, tasks);
+
+          tasks.forEach(function( task ) {
+            task.init(function() {
+              task.load_history(function() {
+                console.log(  'task.init', task.id );
+              })
+            });
+          });
+        });
       }
-    }
+    },
   });
 
   var insert_into_arr= function  ( arr_origin, start, remove, arr) {
@@ -94,21 +137,6 @@ require([
   };
 
 
-  models.get_all_todos( function( err, tasks ) {
-    if( err  ) {
-      console.log( err );
-      return;
-    }
-
-    insert_into_arr( main_vm.tasks, 0, 0, tasks);
-
-    tasks.forEach(function( task ) {
-      task.init(function() {
-        task.load_history(function() {
-          console.log(  'task.init', task.id );
-        })
-      });
-    });
-  });
+  main_vm.init_task_list();
 
 });
