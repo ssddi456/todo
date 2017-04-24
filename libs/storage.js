@@ -24,6 +24,20 @@ var dbs = {};
   方法调用先压入队列, 连接完成后调用队列。
 */
 
+var config = require('../config');
+
+function get_connect_url( dbname ) {
+
+  var db_info = config.db[dbname] || {};
+
+  return 'mongodb://'+( db_info.user 
+                          ? ( db_info.user + ':' + db_info.pass +'@') 
+                          : '')
+                + ( db_info.host ||'localhost' )
+                + ':' 
+                + (db_info.port || '27017') +'/' + dbname
+}
+
 function mongo_collection( dbname, name ) {
   this.name = name;
   this.queue = [];
@@ -34,8 +48,8 @@ function mongo_collection( dbname, name ) {
   this.db = null;
   this.collection = null;
   var self = this;
-
-  mongoclient.connect('mongodb://localhost:27017/' + dbname, function( err, db ) {
+  var db_url = get_connect_url(dbname);
+  mongoclient.connect( db_url, function( err, db ) {
 
     if( err ){
       debug(err);

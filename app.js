@@ -5,10 +5,13 @@ if( debug_name == 'index'){
 }
 (require.main === module) && (function(){
     process.env.DEBUG = '-storage,-send,-express:*,*';
+    // process.env.DEBUG = '-send,-express:*,*';
+    process.env.DEBUG_COLORS = 0;
 })()
 
 var debug = require('debug');
 var debug_root = path.join(__dirname, './log/');
+var util = require('util');
 
 function pad2( num ) {
   num = num + '';
