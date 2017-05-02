@@ -101,11 +101,6 @@ app.get('/skin/:styles',function(req,resp, next) {
 var routes = require('./routes');
 app.use(routes);
 
-app.get('/:template',function( req, resp, next) {
-  resp.render( req.params.template );
-});
-
-
 // error handlers
 
 // development error handler

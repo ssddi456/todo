@@ -29,6 +29,27 @@ define([
       }
     });
   };
+  ret.format_date = function( time, tpl ) {
+    time = new Date(time);
+    tpl = tpl || '{{year}}年{{month}}月{{date}}日{{hour}}时'
+    var formated = {
+      year : time.getFullYear(),
+      month : time.getMonth() + 1,
+      date  : time.getDate(),
+      hour : time.getHours(),
+    };
+
+    return tpl.replace(/\{\{([^}]+)\}\}([^ {}]+)/g, function( $, $1, $2 ) {
+      var t = formated[$1];
+      return t + $2;
+    });
+  };
+
+  ret.insert_into_arr = function  ( arr_origin, start, remove, arr) {
+      var args = [start, remove].concat(arr);
+
+      arr_origin.splice.apply(arr_origin, args);
+  };
 
   return ret;
 });

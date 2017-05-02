@@ -26,83 +26,12 @@ append content
               span 新增项目
 
   #main
-    .container
+    .container(v-for="task in tasks")
+      include ./includes/task.jade
 
-      .panel.panel-default(v-for="task in tasks")
-        .panel-heading
-          h4(v-text="task.name", v-bind:title="task.from_create")
-          //- 在这里搞一点按纽
-          .btn-toolbar
-            .btn-group
-              a.btn(@click="task.toggle_emergency")
-                i.glyphicon.glyphicon-time(:class="{ emergency : task.emergency, unfinished : !task.emergency }")
-              a.btn(@click="task.toggle_important")
-                i.glyphicon.glyphicon-info-sign(:class="{ emergency : task.important, unfinished : !task.important }")
-              a.btn(@click="task.change_status")
-                i.glyphicon.glyphicon-ok(:class="{ unfinished : task.status == 'open' }")
+  include ./includes/task_edit.jade
+  include ./includes/task_progress_edit.jade
 
-            .btn-group
-              a.btn.btn-default(@click="edit_task(task)")
-                i.glyphicon.glyphicon-edit
-              a.btn.btn-default(@click="add_task_progress(task)")
-                i.glyphicon.glyphicon-plus
-              a.btn.btn-default(@click="task.toggle_detail")
-                i.glyphicon(:class="{ 'glyphicon-eye-open' : task.show_detail, 'glyphicon-eye-close' : !task.show_detail}").
-
-            .btn-group
-              a.task-progress_status.btn.btn-default(@click="task.toggle_filter_finish", :class="{ disabled  : !task.show_finished }")
-                i.glyphicon.glyphicon-ok
-              a.task-progress_status.btn.unfinished.btn-default(@click="task.toggle_filter_unfinish",:class="{ disabled  : !task.show_unfinished }")
-                i.glyphicon.glyphicon-ok
-
-        .panel-body(v-if="task.show_detail")
-          p.task_background(v-text="task.background")
-        ul.list-group
-          li.list-group-item(
-              v-for="progress in task.histories",
-              v-if=" task.filter_progress(progress.status)")
-            .pull-right
-              i.glyphicon.glyphicon-edit(@click="edit_task_progress(progress)")
-            span.task-progress_status(@click="progress.change_status", :class="{ unfinished : progress.status == 'inprogress' }")
-              i.glyphicon.glyphicon-ok
-            | &nbsp;
-            span(v-text="progress.content")
-            span.last_update_past(v-if="progress.show_update_past()",v-text="progress.last_update_past()")
-
-  #task_edit.modal(role='dialog', tabindex='-1')
-    .modal-dialog(role='document')
-      .modal-content
-        .modal-header
-          button.close(type='button', data-dismiss='modal', aria-label='Close')
-            span(aria-hidden='true') ×
-          h4.modal-title 编辑项目
-        .modal-body
-          .form
-            .form-group
-              label 项目名
-              input.form-control(type='text', placeholder='项目名', name="name")
-            .form-group
-              label 项目背景
-              textarea.form-control(type='text', placeholder='项目背景', name="background")
-
-        .modal-footer
-          button.btn.btn-default(type='button', data-dismiss='modal') 取消
-          button.btn.btn-primary(type='button', data-label="confirm") 保存
-
-  #task_progress_edit.modal(role='dialog', tabindex='-1')
-    .modal-dialog(role='document')
-      .modal-content
-        .modal-header
-          button.close(type='button', data-dismiss='modal', aria-label='Close')
-            span(aria-hidden='true') ×
-          h4.modal-title 编辑进度
-        .modal-body
-          .form
-            .form-group
-              input.form-control(type='text', placeholder='进度', name="content")
-        .modal-footer
-          button.btn.btn-default(type='button', data-dismiss='modal') 取消
-          button.btn.btn-primary(type='button', data-label="confirm") 保存
 
   .toast.alert.alert-success(id='toast')
     | &nbsp;

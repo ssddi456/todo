@@ -1,10 +1,14 @@
 require([
+  './task_mixin',
+  './util',
   './localconf',
   './misc',
   './modals',
   './models',
   './postChannel',
 ],function(
+  task_mixin,
+  util,
   localconf,
   misc,
   modals,
@@ -56,53 +60,14 @@ require([
     data : {
       tasks : [],
     },
+    mixins : [task_mixin],
     methods : {
 
-
-      edit_task : function( task ) {
-        var callback = function( err, data ) {
-          task.save(function() { });
-        };
-
-        modals.task_edit({ data : task }, callback );
-
-      },
-      
-      add_task_progress : function( task ) {
-
-        //
-        // 弹个窗口
-        //
-
-        var task_progress = new models.task_progress();
-        task_progress.parent_id = task.id;
-
-        var callback = function( err, data ) {
-
-          task_progress.save(function() {
-            if( !err ){
-              task.histories.unshift( task_progress );
-            }
-          });
-        };
-
-        modals.task_progress_edit({ data : task_progress }, callback );
-
-      },
-
-      edit_task_progress : function( task_progress ) {
-        var callback = function( ) {
-          task_progress.save(function() {
-              
-          });
-        };
-
-        modals.task_progress_edit({ data : task_progress }, callback );
-      },
       init_task_list : function() {
           
         var show_all = localconf.get('show_all');
         var init_method;
+        var self = this;
 
         if( show_all ){
           init_method = 'get_all_todos';
@@ -116,7 +81,7 @@ require([
             return;
           }
 
-          insert_into_arr( main_vm.tasks, 0, main_vm.tasks.length, tasks);
+          util.insert_into_arr( self.tasks, 0, self.tasks.length, tasks);
 
           tasks.forEach(function( task ) {
             task.init(function() {
@@ -129,12 +94,6 @@ require([
       }
     },
   });
-
-  var insert_into_arr= function  ( arr_origin, start, remove, arr) {
-      var args = [start, remove].concat(arr);
-
-      arr_origin.splice.apply(arr_origin, args);
-  };
 
 
   main_vm.init_task_list();

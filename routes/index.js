@@ -164,6 +164,24 @@ router.get('/', function( req, resp, next ) {
   resp.render('index', {});
 });
 
+router.get('/task/:task_id', function( req, resp, next ) {
+  var query = req.query;
+  var params = req.params;
+
+  task_store.findOne({ _id : mongodb.ObjectId(params.task_id)  }, function( err, task ) {
+    if( err ){
+      next(err);
+    } else {
+      if( task ){
+        resp.render('project', { main_task : { id : params.task_id } });
+      } else {
+        next();
+      }
+    }
+  });
+});
+
+
 router.get('/tasks/list', function( req, resp, next ) {
 
   var query = req.query;

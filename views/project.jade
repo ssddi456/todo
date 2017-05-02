@@ -1,0 +1,44 @@
+extends ./layout.jade
+
+
+append content 
+  nav#nav.navbar.navbar-default
+    .container
+      .navbar-header
+        a.navbar-brand(href='/') TODOs
+
+      ul.nav.navbar-nav
+        li.active(@click="toggle_task_filter")
+          a(href='#') List
+        li
+          a(href='#') Calender
+
+      //- form.navbar-form.navbar-left
+      //-   .form-group
+      //-     input.form-control(placeholder='Search')
+      //-   button.btn.btn-default(type='submit') Submit
+
+  #main.container
+    include ./includes/task.jade
+      div(v-if="progress.time_info",style="position:relative;height:20px;")
+        div(v-if="progress.status != 'finished'",)
+          div(style="height:20px;background:yellow;position:absolute;top:0;left:0;right:0;")
+        div(style="height:20px;position:absolute;top:0;left:0;\
+                  border-right:3px solid green",
+            v-for="_time_info in progress.time_info",
+            :style="{ width: _time_info.percent + '%', background: _time_info.bgc }"
+            v-bind:title="_time_info.label")
+      
+
+  include ./includes/task_edit.jade
+  include ./includes/task_progress_edit.jade
+
+
+
+append css
+  link(href='/skin/app.less',rel="stylesheet",type="text/css")
+
+append js
+  script(src="http://cdn.staticfile.org/require.js/2.1.11/require.js",data-main='/source/project.js')
+  script.
+    var main_task = !{JSON.stringify( main_task || {})};

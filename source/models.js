@@ -169,6 +169,8 @@ define([
       return false;
     };
 
+    this.time_info = undefined;
+
     this.last_update_past = function() {
       var delta = Date.now() - this.lastest_update;
       return util.format_time(delta);
@@ -396,6 +398,24 @@ define([
         done();
       }
     });
+  };
+
+  tp.get_time_scale = function() {
+      // 定义域
+      var start = this.create_at;
+      var end = Date.now();
+      var define_delta = end - start;
+
+      // 值域
+      var min = 0;
+      var max = 100;
+      var value_delta = max - min;
+
+      return function( input_time ) {
+          var delta = input_time - start;
+          console.log( delta, define_delta, Math.floor(delta/define_delta) );
+          return Math.floor( delta / define_delta * value_delta ) + min;
+      }
   };
 
   tp.add_progress = function( progress, done ) {

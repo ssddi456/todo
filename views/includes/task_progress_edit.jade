@@ -1,0 +1,15 @@
+#task_progress_edit.modal(role='dialog', tabindex='-1')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') ×
+        h4.modal-title 编辑进度
+      .modal-body
+        .form
+          .form-group
+            input.form-control(type='text', placeholder='进度', name="content")
+      .modal-footer
+        button.btn.btn-default(type='button', data-dismiss='modal') 取消
+        button.btn.btn-primary(type='button', data-label="confirm") 保存
+
