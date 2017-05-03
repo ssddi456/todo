@@ -36,6 +36,10 @@ require([
     main_vm.task.load_history(function() {
       console.log(  'task.init', main_vm.task.id );
       var scale = main_vm.task.get_time_scale();
+
+      main_vm.task.show_detail = true;
+      main_vm.task.show_finished = true;
+
       main_vm.task.histories.forEach(function( task_progress ) {
         var start = task_progress.create_at;
         var changes = Object.keys(task_progress.status_change || {})
