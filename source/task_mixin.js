@@ -1,6 +1,8 @@
 define([
+  './models',
   './modals'
 ],function(
+  models,
   modals
 ){
   
