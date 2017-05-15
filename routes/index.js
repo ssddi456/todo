@@ -282,6 +282,8 @@ router.post( '/tasks/save', function( req, resp, next ) {
 
         if( old_status != new_status ){
           task.doc['status_change.'+ Date.now()] = new_status;
+        } else {
+          task.doc['status_change.'+ Date.now()] = 'edit';
         }
 
         task.doc.lastest_update = Date.now();

@@ -30,6 +30,7 @@ require([
   var color_map = {
     'start' : 'white',
     'finished' : 'green',
+    'edit' : 'blue',
   };
 
   main_vm.task.init(function() {
