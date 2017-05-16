@@ -56,3 +56,51 @@
 .last_update_past:after{
   content : ' past)';
 }
+
+.time_info{
+  position:relative;
+  height:20px;
+  margin: 3px 13px;
+
+  .time_stop{
+    height:20px;
+    position:absolute;
+    top:0;
+    left:0;
+    border-right:3px solid green;
+
+    &:before{
+      content: '';
+      right: -13px;
+      top: -3px;
+      position: absolute;
+      border: 3px solid green;
+      border-radius: 13px;
+      height: 26px;
+      width: 26px;
+    }
+
+    &:after{
+      content: '';
+      right: -10px;
+      top: 0px;
+      position: absolute;
+      border: 2px solid white;
+      border-radius: 10px;
+      height: 20px;
+      width: 20px;
+    }
+
+    &.start_stop:after{
+      background-color: green;
+    }
+
+    &.edit_stop:after{
+      background-color: green;
+    }
+
+    &.finished_stop:after{
+      background-color: green;
+    }
+  }
+}

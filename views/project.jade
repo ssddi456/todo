@@ -20,13 +20,13 @@ append content
 
   #main.container
     include ./includes/task.jade
-      div(v-if="progress.time_info",style="position:relative;height:20px;")
+      div.time_info(v-if="progress.time_info")
         div(v-if="progress.status != 'finished'",)
           div(style="height:20px;background:yellow;position:absolute;top:0;left:0;right:0;")
-        div(style="height:20px;position:absolute;top:0;left:0;\
-                  border-right:3px solid green",
+        div.time_stop(
             v-for="_time_info in progress.time_info",
-            :style="{ width: _time_info.percent + '%', background: _time_info.bgc }"
+            :style="{ width: _time_info.percent + '%', background: _time_info.bgc }",
+            :class="[_time_info.type + '_stop']"
             v-bind:title="_time_info.label")
       
 
