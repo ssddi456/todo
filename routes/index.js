@@ -140,6 +140,8 @@ router.post( '/task_progress/save', function( req, resp, next ) {
 
           if( old_status != new_status ){
             task_progress.doc['status_change.'+ Date.now()] = new_status;
+          } else {
+            task_progress.doc['status_change.'+ Date.now()] = 'edit';
           }
 
           task_progress.doc.lastest_update = Date.now();
