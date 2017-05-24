@@ -157,8 +157,9 @@ define([
       if( this.status == 'finished' ){
         return false;
       }
-      if( this.lastest_update ){
-        var delta = Date.now() - this.lastest_update;
+      var lastest_update = this.get_last_update();
+      if( lastest_update ){
+        var delta = Date.now() - lastest_update;
 
         if( delta < util.day ){
           return false;
@@ -172,7 +173,7 @@ define([
     this.time_info = undefined;
 
     this.last_update_past = function() {
-      var delta = Date.now() - this.lastest_update;
+      var delta = Date.now() - this.get_last_update();
       return util.format_time(delta);
     };
   };
@@ -190,6 +191,9 @@ define([
 
     this.save(done)
   };
+  tpp.get_last_update = function() {
+      return this.lastest_update || this.create_at;
+  }
 
   tpp.save = function( done ) {
     var self = this;
