@@ -1,0 +1,26 @@
+extends ./layout.jade
+
+
+append content 
+  include ./includes/nav.jade
+    block navbar-form
+      .btn-toolbar
+        .btn-group
+          .btn.btn-default(@click="add_paste") 
+            i.glyphicon.glyphicon-file
+            span 贴
+
+
+  #main
+    .container-fluid
+      .list-group
+        li.list-group-item(v-for="paste in pastes", @click="copy_paste(paste)")
+          {{ paste.content }}
+
+  include ./includes/paste_add.jade
+
+append css
+  link(href='./skin/app.less',rel="stylesheet",type="text/css")
+
+append js
+  script(src="//cdn.bootcss.com/require.js/2.3.4/require.min.js",data-main='./source/pastes.js')

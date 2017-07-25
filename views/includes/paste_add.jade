@@ -1,0 +1,15 @@
+#paste_add.modal(role='dialog', tabindex='-1')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') ×
+        h4.modal-title 新增贴纸
+      .modal-body
+        .form
+          .form-group
+            textarea.form-control(type='text', placeholder='项目背景', name="content")
+
+      .modal-footer
+        button.btn.btn-default(type='button', data-dismiss='modal') 取消
+        button.btn.btn-primary(type='button', data-label="confirm") 保存

@@ -99,7 +99,9 @@ app.get('/skin/:styles',function(req,resp, next) {
 });
 
 var routes = require('./routes');
+var pastes = require('./routes/pastes');
 app.use(routes);
+app.use('/pastes', pastes);
 
 // error handlers
 

@@ -4,11 +4,13 @@ include mixins
 doctype
 html
   head
+    meta(name="viewport",content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no")
     block heads
     block css
       link(href="http://cdn.bootcss.com/twitter-bootstrap/3.3.6/css/bootstrap.css",rel="stylesheet",type="text/css")
   body
     block content
+      include ./includes/toast.jade
 
     script(src="http://cdn.bootcss.com/jquery/1.11.0/jquery.min.js")
     script(src="http://cdn.bootcss.com/vue/1.0.28/vue.min.js")

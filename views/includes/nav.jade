@@ -1,0 +1,15 @@
+nav#nav.navbar.navbar-default
+  .container-fluid
+    .navbar-header
+      a.navbar-brand(href='#') Brand
+
+    ul.nav.navbar-nav
+      li.active(@click="toggle_task_filter")
+        a(href='#') List
+      li
+        a(href='#') Calender
+      li
+        a(href='/pastes') Pasts
+
+    .navbar-form.navbar-left
+      block navbar-form
