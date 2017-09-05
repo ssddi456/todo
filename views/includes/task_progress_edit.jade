@@ -9,6 +9,26 @@
         .form
           .form-group
             input.form-control(type='text', placeholder='进度', name="content")
+          .form-group
+            label 预估完成时间
+              - var now = new Date(Date.now());
+              - var p1day = new Date(Date.now() + 24*60*60*1e3);
+              - var fixlen2 = function(n){ return (n/100).toFixed(2).slice(2);};
+              - var now_date = now.getFullYear() + '-'+ fixlen2(now.getMonth() + 1) + '-' + fixlen2(now.getDate());
+              - var p1day_date = p1day.getFullYear() + '-'+ fixlen2(p1day.getMonth() + 1) + '-' + fixlen2(p1day.getDate());
+            .input-group.date(
+                data-provide="datepicker",
+                data-date-autoclose="true",
+                data-date-format="yyyy-mm-dd",
+                data-date-start-date="#{now_date}")
+              input.form-control(
+                type='text', 
+                value="#{p1day_date}",
+                placeholder='deadline', 
+                name="deadline")
+              .input-group-addon
+                span.glyphicon.glyphicon-th
+
       .modal-footer
         button.btn.btn-default(type='button', data-dismiss='modal') 取消
         button.btn.btn-primary(type='button', data-label="confirm") 保存

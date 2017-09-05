@@ -57,50 +57,94 @@
   content : ' past)';
 }
 
+@time_info_lineheight: 18px;
+@time_info_dot_border_size: 2px;
+
+.time_info_wrapper{
+  position: relative;
+  height: @time_info_lineheight;
+}
+.time_info_bg{
+  height: @time_info_lineheight/2;
+  background:yellow;
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+}
 .time_info{
   position:relative;
-  height:20px;
-  margin: 3px 13px;
+  height: @time_info_lineheight/2;
+
 
   .time_stop{
-    height:20px;
+    height: @time_info_lineheight;
     position:absolute;
     top:0;
     left:0;
-    border-right:3px solid green;
 
     &:before{
       content: '';
-      right: -13px;
-      top: -3px;
       position: absolute;
-      border: 3px solid green;
-      border-radius: 13px;
-      height: 26px;
-      width: 26px;
+      clip: rect(0px, @time_info_lineheight, 0.5*@time_info_lineheight, 0px);
+
+      right: -0.5 * @time_info_lineheight;
+      top: 0;
+      border: @time_info_dot_border_size solid green;
+      border-radius: 0.5 * @time_info_lineheight;
+      height: @time_info_lineheight;
+      width: @time_info_lineheight;
     }
 
     &:after{
       content: '';
-      right: -10px;
-      top: 0px;
       position: absolute;
+      clip: rect(0px, @time_info_lineheight, 0.5*(@time_info_lineheight - @time_info_dot_border_size), 0px);
+
+      right: -0.5 * @time_info_lineheight + @time_info_dot_border_size;
+      top: @time_info_dot_border_size;
       border: 2px solid white;
-      border-radius: 10px;
-      height: 20px;
-      width: 20px;
+      border-radius: 0.5 * @time_info_lineheight - @time_info_dot_border_size;
+      height: @time_info_lineheight - 2 * @time_info_dot_border_size;
+      width: @time_info_lineheight - 2 * @time_info_dot_border_size;
     }
 
     &.start_stop:after{
-      background-color: green;
+      background-color: blue;
     }
 
     &.edit_stop:after{
-      background-color: green;
+      background-color: blue;
     }
 
     &.finished_stop:after{
       background-color: green;
+    }
+  }
+  &.deadline {
+    .time_stop{
+      top: -0.5 * @time_info_lineheight;
+      &:before {
+        clip: rect(0.5*@time_info_lineheight, @time_info_lineheight, @time_info_lineheight, 0px);
+      }
+
+      &:after{
+        clip: rect(0.5*@time_info_lineheight - @time_info_dot_border_size, @time_info_lineheight, @time_info_lineheight, 0px);
+      }
+
+      &.prev_deadline_stop:before{
+        border-color: pink;
+      }
+      &.prev_deadline_stop:after{
+        background-color: pink;
+      }
+
+      &.deadline_stop:before{
+        border-color: red;
+      }
+      &.deadline_stop:after{
+        background-color: red;
+      }
     }
   }
 }
