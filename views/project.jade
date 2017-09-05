@@ -20,15 +20,28 @@ append content
 
   #main.container
     include ./includes/task.jade
-      div.time_info(v-if="progress.time_info")
-        div(v-if="progress.status != 'finished'",)
-          div(style="height:20px;background:yellow;position:absolute;top:0;left:0;right:0;")
-        div.time_stop(
-            v-for="_time_info in progress.time_info",
-            :style="{ width: _time_info.percent + '%', background: _time_info.bgc }",
-            :class="[_time_info.type + '_stop']"
-            v-bind:title="_time_info.label")
-      
+
+      .row
+        .col-xs-12.time_info_wrapper
+          .time_info(v-if="progress.time_info")
+            div(v-if="progress.status != 'finished'",)
+              .time_info_bg
+            .time_stop(
+                v-for="_time_info in progress.time_info",
+                :style="{ width: _time_info.percent + '%', background: _time_info.bgc }",
+                :class="[_time_info.type + '_stop']"
+                v-bind:title="_time_info.label")
+            div &nbsp;
+          .time_info.deadline
+            .time_stop(
+                v-for="_time_info in progress.deadline_info",
+                :style="{ width: _time_info.percent + '%' }",
+                :class="[_time_info.type + '_stop']"
+                v-bind:title="_time_info.label")
+            div &nbsp;
+
+      //- 上半是时间
+      //- 下半部分是计划
 
   include ./includes/task_edit.jade
   include ./includes/task_progress_edit.jade
