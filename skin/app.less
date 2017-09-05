@@ -82,6 +82,7 @@
     position:absolute;
     top:0;
     left:0;
+    z-index: 2;
 
     &:before{
       content: '';
@@ -124,6 +125,8 @@
   &.deadline {
     .time_stop{
       top: -0.5 * @time_info_lineheight;
+      z-index: 1;
+
       &:before {
         clip: rect(0.5*@time_info_lineheight, @time_info_lineheight, @time_info_lineheight, 0px);
       }
