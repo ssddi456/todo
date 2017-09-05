@@ -175,7 +175,7 @@ router.post('/task_progress/save', function(req, resp, next) {
                     // 结束点变化
                     var old_deadline = doc.deadline;
                     var new_deadline = task_progress.doc.deadline;
-                    if (old_deadline != new_deadline) {
+                    if (new_deadline && old_deadline != new_deadline) {
                         task_progress.doc['deadline_change.' + Date.now()] = old_deadline;
                     }
 
