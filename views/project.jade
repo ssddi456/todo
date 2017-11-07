@@ -8,15 +8,11 @@ append content
         a.navbar-brand(href='/') TODOs
 
       ul.nav.navbar-nav
-        li.active(@click="toggle_task_filter")
-          a(href='#') List
+        li
+          a(href='/') List
         li
           a(href='#') Calender
-
-      //- form.navbar-form.navbar-left
-      //-   .form-group
-      //-     input.form-control(placeholder='Search')
-      //-   button.btn.btn-default(type='submit') Submit
+        
 
   #main.container
     include ./includes/task.jade

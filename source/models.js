@@ -265,7 +265,10 @@ define([
 
     };
 
-
+    //
+    //   so i should learn json schema
+    //   and export json schema from typescript
+    // 
     var task_model = model({
         name: '',
         background: '',

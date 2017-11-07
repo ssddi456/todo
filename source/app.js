@@ -18,6 +18,9 @@ require([
 
   var nav_vm = new Vue({
     el : '#nav',
+    data: {
+      show_all: false
+    },
     methods : {
       add_task : function() {
 
@@ -38,19 +41,15 @@ require([
         modals.task_edit({ data : task }, callback );
 
       },
-      toggle_task_filter : function() {
+      switch_show_all: function(e) {
+          this.show_all = e.target.value;
+      }
+    },
+    watch: {
+      show_all: function(show_all, old) {
+        localconf.set('show_all', 1 * show_all);
 
-          var show_all = localconf.get('show_all');
-          if( show_all ){
-            show_all = 0;
-          } else {
-            show_all = 1;
-          }
-
-          localconf.set('show_all', show_all);
-
-          main_vm.init_task_list();
-
+        main_vm.init_task_list();
       }
     }
   });
