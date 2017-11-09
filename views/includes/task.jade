@@ -21,11 +21,11 @@
 
           ul.dropdown-menu(aria-labelledby='dropdownMenu1')
               li(@click="task.change_status('hole')", v-show="task.status !== 'hole'")
-                  a(href='#') 脑洞
+                  a(href='javascript: void(0);') 脑洞
               li(@click="task.change_status('open')", v-show="task.status !== 'open'")
-                  a(href='#') 进行中
+                  a(href='javascript: void(0);') 进行中
               li(@click="task.change_status('finished')", v-show="task.status !== 'finished'")
-                  a(href='#') 完成
+                  a(href='javascript: void(0);') 完成
 
       .btn-group
         a.btn.btn-default(@click="edit_task(task)")
