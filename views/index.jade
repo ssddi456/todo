@@ -1,36 +1,32 @@
+include ./includes/nav.jade
 extends ./layout.jade
 
+mixin show_all_radio(value)
+  label.btn.btn-default(:class="{'active' : show_all == '#{value}' }")
+    input(type="radio",
+        name="show_all", 
+        value="#{value}", 
+        :checked="show_all"
+        @click="switch_show_all")
+    block
 
 append content 
-  include ./includes/nav.jade
-    block navbar-form
-      .btn-toolbar
-        .btn-group(my-toggle="buttons")
-          label.btn.btn-default(:class="{'active' : show_all == '0' }")
-            input(type="radio",
-                name="show_all", 
-                value="0", 
-                :checked="show_all"
-                @click="switch_show_all")
-            | 进行中
-          label.btn.btn-default
-            input(type="radio",
-                name="show_none", 
-                value="0")
-            | 脑洞中
-          label.btn.btn-default(:class="{'active' : show_all == '1' }")
-            input(
-              type="radio",
-              name="show_all", 
-              value="1", 
-              :checked="show_all",
-              @click="switch_show_all")
-            | 全部
+  +nav('/')
+    .btn-toolbar
+      .btn-group(my-toggle="buttons")
+        +show_all_radio('open')
+          | 进行中
+        +show_all_radio('hole')
+          | 脑洞中
+        +show_all_radio('finished')
+          | 已完成
+        +show_all_radio('all')
+          | 全部
 
-        .btn-group
-          .btn.btn-default(@click="add_task") 
-            i.glyphicon.glyphicon-file
-            span 新增项目
+      .btn-group
+        .btn.btn-default(@click="add_task") 
+          i.glyphicon.glyphicon-file
+          span 新增项目
 
   #main
     .container-fluid(v-for="task in tasks")

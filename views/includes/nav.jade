@@ -1,15 +1,23 @@
-nav#nav.navbar.navbar-default.navbar-fixed-top
-  .container-fluid
-    .navbar-header
-      a.navbar-brand(href='#') Brand
+mixin nav_link(href, active_href)
+  li(class="#{href == active_href? 'active' : ''}")
+    a(href="#{href  == active_href? '#' : href}")
+      block
 
-    ul.nav.navbar-nav
-      li.active(@click="toggle_task_filter")
-        a(href='#') List
-      li
-        a(href='#') Calender
-      li
-        a(href='/pastes') Pasts
+mixin nav(should_active_href)
+  nav#nav.navbar.navbar-default.navbar-fixed-top
+    .container-fluid
+      .navbar-header
+        a.navbar-brand(href='/') Brand
 
-    .navbar-form.navbar-left
-      block navbar-form
+      ul.nav.navbar-nav
+        +nav_link('/', should_active_href)
+          | List
+        +nav_link('#', should_active_href)
+          | Calender
+
+      .navbar-form.navbar-left
+        block
+
+      ul.nav.navbar-nav.navbar-left
+        +nav_link('/pastes', should_active_href)
+          | Pasts

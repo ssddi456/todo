@@ -1,15 +1,14 @@
+include ./includes/nav.jade
 extends ./layout.jade
 
 
 append content 
-  include ./includes/nav.jade
-    block navbar-form
-      .btn-toolbar
-        .btn-group
-          .btn.btn-default(@click="add_paste") 
-            i.glyphicon.glyphicon-file
-            span 贴
-
+  +nav('/pastes')
+    .btn-toolbar
+      .btn-group
+        .btn.btn-default(@click="add_paste") 
+          i.glyphicon.glyphicon-file
+          span 贴
 
   #main
     .container-fluid

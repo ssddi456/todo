@@ -401,12 +401,19 @@ define([
         });
     };
 
-    tp.change_status = function(done) {
-        if (this.status == 'open') {
-            this.status = 'finished';
-        } else {
-            this.status = 'open';
+    var status_list = [
+        'hole',
+        'open',
+        'finished'
+    ];
+    // 这个现在应该是一个select
+    // 需要改一下。
+    tp.change_status = function(status, done) {
+        if( status_list.indexOf(status) == -1){
+            console.error(status, 'is not a valide status');
+            return;
         }
+        this.status = status;
 
         this.save(done);
     };
@@ -464,8 +471,8 @@ define([
                 end = Math.max(end, deadline);
             }
             var deadline_change = progress.deadline_change;
-            for(var k in deadline_change){
-                if(deadline_change.hasOwnProperty(k)) {
+            for (var k in deadline_change) {
+                if (deadline_change.hasOwnProperty(k)) {
                     end = Math.max(end, deadline_change[k]);
                 }
             }
@@ -499,42 +506,33 @@ define([
         });
     };
 
+    function get_tasks_from_remote(status) {
+        return function(done) {
+            postchannel({
+                method: 'GET',
+                command: '/tasks/list',
+                data: {
+                    status: status
+                }
+            }, function(err, data) {
 
-    ret.get_open_todos = function(done) {
-        postchannel({
-            method: 'GET',
-            command: '/tasks/list',
-            data: {
-                status: 'open'
-            }
-        }, function(err, data) {
-
-            if (err) {
-                done(err);
-            } else {
-                done(null, data.tasks.map(function(node) {
-                    return new task(node);
-                }))
-            }
-        });
-    };
-
-
-    ret.get_all_todos = function(done) {
-        postchannel({
-            method: 'GET',
-            command: '/tasks/list'
-        }, function(err, data) {
-
-            if (err) {
-                done(err);
-            } else {
-                done(null, data.tasks.map(function(node) {
-                    return new task(node);
-                }))
-            }
-        });
+                if (err) {
+                    done(err);
+                } else {
+                    done(null, data.tasks.map(function(node) {
+                        return new task(node);
+                    }))
+                }
+            });
+        }
     }
+
+
+    ret.get_open_todos = get_tasks_from_remote('open');
+    ret.get_hole_toods = get_tasks_from_remote('hole');
+    ret.get_finish_toods = get_tasks_from_remote('finished');
+    ret.get_all_todos = get_tasks_from_remote('');
+
     ret.formatDate = formatDate;
 
     return ret;

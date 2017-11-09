@@ -1,18 +1,10 @@
+include ./includes/nav.jade
+
 extends ./layout.jade
 
 
 append content 
-  nav#nav.navbar.navbar-default
-    .container
-      .navbar-header
-        a.navbar-brand(href='/') TODOs
-
-      ul.nav.navbar-nav
-        li
-          a(href='/') List
-        li
-          a(href='#') Calender
-        
+  +nav('/project')
 
   #main.container
     include ./includes/task.jade
