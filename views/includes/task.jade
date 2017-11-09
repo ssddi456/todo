@@ -1,4 +1,4 @@
-.panel.panel-default
+.panel.panel-default(v-show="task.visible")
   .panel-heading
     h4
       a(v-text="task.name", v-bind:title="task.from_create", v-bind:href="'/task/' + task.id")

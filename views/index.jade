@@ -24,6 +24,11 @@ append content
           | 全部
 
       .btn-group
+        .input-group
+          input.form-control(type="text",v-model="filter_text")
+          span.input-group-btn
+              button.btn.btn-default(type='button') Go!
+      .btn-group
         .btn.btn-default(@click="add_task") 
           i.glyphicon.glyphicon-file
           span 新增项目

@@ -41,6 +41,8 @@ define([
 
                     if (def[k].readonly) {
                         // 不接受客户端上传的改动
+                    } else if( def[k].viewonly){
+                        // 只在界面上用
                     } else {
                         update_keys.push(k);
                     }
@@ -67,7 +69,9 @@ define([
             var self = this;
 
             function set_k(k) {
-                if (type[k]) {
+                if( def[k].viewonly){
+                    self[k] = def[k].initial;
+                } else if (type[k]) {
                     self[k] = type[k](obj[k]);
                 } else if (def[k] && typeof def[k] == 'object' && ('displayFormat' in def[k])) {
                     self[k] = def[k].displayFormat(obj[k]);
@@ -302,6 +306,11 @@ define([
         status_change: {
             readonly: true,
             initial: {}
+        },
+        visible: {
+            viewonly: true,
+            type: Boolean,
+            initial: true
         },
     });
 

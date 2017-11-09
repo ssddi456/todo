@@ -19,7 +19,8 @@ require([
   var nav_vm = new Vue({
     el: '#nav',
     data: {
-      show_all: localconf.get('show_all')
+      show_all: localconf.get('show_all'),
+      filter_text: '',
     },
     methods: {
       add_task: function() {
@@ -44,9 +45,28 @@ require([
 
       },
       switch_show_all: function(e) {
+        this.filter_text = '';
         var show_all = this.show_all = e.target.value;
         localconf.set('show_all', show_all);
         main_vm.init_task_list();
+      }
+    },
+    watch: {
+      filter_text: function(filter_text) {
+        var tasks = main_vm.tasks;
+        tasks.forEach(function(task) {
+          if (!filter_text) {
+            task.visible = true;
+          }
+
+          if(task.name.indexOf(filter_text) != -1 
+            || task.background.indexOf(filter_text) != -1 
+          ){
+            task.visible = true;
+          } else {
+            task.visible = false;
+          }
+        });
       }
     }
   });
@@ -54,7 +74,7 @@ require([
   var main_vm = new Vue({
     el: '#main',
     data: {
-      tasks: [],
+      tasks: []
     },
     mixins: [task_mixin],
     methods: {
@@ -71,8 +91,8 @@ require([
 
         var self = this;
 
-        if( !(init_method in models) ){
-          console.error( init_method, 'not found' );
+        if (!(init_method in models)) {
+          console.error(init_method, 'not found');
           return;
         }
 
@@ -81,7 +101,7 @@ require([
             console.log(err);
             return;
           }
-
+          console.log( tasks );
           util.insert_into_arr(self.tasks, 0, self.tasks.length, tasks);
 
           tasks.forEach(function(task) {
@@ -92,7 +112,9 @@ require([
             });
           });
         });
-      }
+      },
+
+
     },
   });
 
