@@ -11,7 +11,7 @@
         a.btn(@click="task.toggle_important")
           i.glyphicon.glyphicon-info-sign(:class="{ emergency : task.important, unfinished : !task.important }")
 
-        span.dropdown
+        span.dropdown(style="display:inline-block;")
           a.btn(data-toggle='dropdown',
               aria-haspopup='true',
               aria-expanded='true')
