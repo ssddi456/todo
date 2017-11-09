@@ -100,8 +100,11 @@ app.get('/skin/:styles',function(req,resp, next) {
 
 var routes = require('./routes');
 var pastes = require('./routes/pastes');
+var calender = require('./routes/calender');
+
 app.use(routes);
 app.use('/pastes', pastes);
+app.use('/calender', calender);
 
 // error handlers
 

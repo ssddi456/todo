@@ -16,7 +16,7 @@
               aria-haspopup='true',
               aria-expanded='true')
             i.glyphicon.glyphicon-ok(:class="{ unfinished : task.status !== 'finished' }")
-            {{ task.status === 'hole' ? '脑洞' : task.status === 'open' ? '进行中' : '完成'}}
+            | {{ task.status === 'hole' ? '脑洞' : task.status === 'open' ? '进行中' : '完成'}}
             span.caret
 
           ul.dropdown-menu(aria-labelledby='dropdownMenu1')

@@ -1,6 +1,6 @@
 mixin nav_link(href, active_href)
   li(class="#{href == active_href? 'active' : ''}")
-    a(href="#{href  == active_href? '#' : href}")
+    a(href="#{href == active_href? 'javascript:void(0);' : href}")
       block
 
 mixin nav(should_active_href)
@@ -12,7 +12,7 @@ mixin nav(should_active_href)
       ul.nav.navbar-nav
         +nav_link('/', should_active_href)
           | List
-        +nav_link('#', should_active_href)
+        +nav_link('/calender', should_active_href)
           | Calender
 
       .navbar-form.navbar-left

@@ -161,3 +161,44 @@
     }
   }
 }
+
+.calender{
+
+  .week {
+    padding: 0 10px;
+    border-bottom: 1px solid black;
+  }
+  .week:last-child {
+    border-bottom: none;
+  }
+  .day{
+    display: inline-block;
+    width: 100% / 7;
+    position: relative;
+    &:before {
+      content: '';
+      float: left;
+      margin-top: 100%;
+      width: 100%;
+    }
+    &:after{
+      content: '';
+      clear: both;
+    }
+    .day_info{
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 0 10px;
+      .day_day{
+        float: right;
+      }
+      .day_events{
+        .day_event{
+
+        }
+      }
+    }
+  }
+}

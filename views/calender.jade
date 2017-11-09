@@ -1,0 +1,50 @@
+include ./includes/nav.jade
+extends ./layout.jade
+
+mixin show_all_radio(value)
+  label.btn.btn-default(:class="{'active' : show_all == '#{value}' }")
+    input(type="radio",
+        name="show_all", 
+        value="#{value}", 
+        :checked="show_all"
+        @click="switch_show_all")
+    block
+
+append content 
+  +nav('/calender')
+    .btn-toolbar
+
+      .btn-group
+        .input-group
+          input.form-control(type="text",v-model="filter_text")
+          span.input-group-btn
+              button.btn.btn-default(type='button') Go!
+      .btn-group
+        .btn.btn-default(@click="add_task") 
+          i.glyphicon.glyphicon-file
+          span 新增事件
+
+  #main
+    .calender
+      .week(v-for="week in weeks") 
+        .day(v-for="day in week")
+          .day_info
+            span.day_day
+              | {{day.day}} {{day.is_today? '今天' : ''}}
+            span.day_date
+              | {{day.year}}-{{day.month}}-{{day.date}}
+            .day_events
+              .day_event(v-for="event in day.events")
+
+    .container-fluid(v-for="task in tasks")
+      include ./includes/task.jade
+
+  include ./includes/task_edit.jade
+  include ./includes/task_progress_edit.jade
+
+
+append css
+  link(href='./skin/app.less',rel="stylesheet",type="text/css")
+
+append js
+  script(src="//cdn.bootcss.com/require.js/2.3.4/require.min.js",data-main='./source/calender.js')
