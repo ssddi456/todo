@@ -13,7 +13,7 @@ var router = module.exports = express.Router();
 
 var storage = require('../libs/storage');
 
-// var pastes_store = storage('pastes', 'pastes');
+// var pastes_store = storage('tasks', 'events');
 
 router.get('/', function(req, resp, next) {
     resp.render('calender', {});

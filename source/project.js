@@ -82,7 +82,7 @@ require([
                     if (task_progress.deadline_change.hasOwnProperty(k) && task_progress.deadline_change[k]) {
                         deadline_info.push({
                             percent: scale(task_progress.deadline_change[k]),
-                            label: '曾经希望完成于 ' + models.formatDate(task_progress.deadline_change[k]),
+                            label: '曾经希望完成于 ' + util.formatDate(task_progress.deadline_change[k]),
                             type: 'prev_deadline'
                         });
                     }

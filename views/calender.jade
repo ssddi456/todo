@@ -13,12 +13,6 @@ mixin show_all_radio(value)
 append content 
   +nav('/calender')
     .btn-toolbar
-
-      .btn-group
-        .input-group
-          input.form-control(type="text",v-model="filter_text")
-          span.input-group-btn
-              button.btn.btn-default(type='button') Go!
       .btn-group
         .btn.btn-default(@click="add_task") 
           i.glyphicon.glyphicon-file
@@ -27,20 +21,28 @@ append content
   #main
     .calender
       .week(v-for="week in weeks") 
-        .day(v-for="day in week")
+        .day(v-for="day in week", 
+            :class="{today: day.is_today}"
+            @click="select_day = day")
           .day_info
-            span.day_day
-              | {{day.day}} {{day.is_today? '今天' : ''}}
-            span.day_date
-              | {{day.year}}-{{day.month}}-{{day.date}}
-            .day_events
-              .day_event(v-for="event in day.events")
+            small
+              | {{day.display_date}}
+            div
+              | {{day.display_day}} {{day.is_today? '今天' : ''}}
+            .day_events(v-if="day.events.length > 0")
+              {{day.events.length}}
 
-    .container-fluid(v-for="task in tasks")
-      include ./includes/task.jade
+    .container-fluid(v-if="select_day")
+      ul.list-group
+        li.list-group-item(v-for="event in select_day.events")
+          a.btn.btn-default.btn-xs.pull-right(href="javascript:void(0)", 
+            v-if="today == select_day"
+            @click="person.finish.bind(person)(event)",
+            :class="{disabled: person.finish_events.indexOf(event) !== -1}")
+            | finish
+          | {{event.name}}
 
-  include ./includes/task_edit.jade
-  include ./includes/task_progress_edit.jade
+  include ./includes/calender_event_edit.jade
 
 
 append css

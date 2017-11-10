@@ -76,6 +76,7 @@ define([
 
     ret.task_edit = modal('#task_edit');
     ret.task_progress_edit = modal('#task_progress_edit');
+    ret.calender_event_edit = modal('#calender_event_edit');
 
     return ret;
 });
