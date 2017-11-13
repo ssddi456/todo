@@ -110,12 +110,16 @@ app.use('/calender', calender);
 
 // development error handler
 // will print stacktrace
+
+app.set('env', 'development');
+
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     var data = {
       message: err.message,
       error: err,
+      stack: err && err.stack,
       err : 1,
       msg : err.message
     };

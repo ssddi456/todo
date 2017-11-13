@@ -48,7 +48,7 @@ define([
     ret.get_events_from_remote = function(done) {
         postchannel({
             method: 'GET',
-            command: '/events/list',
+            command: '/calender/list',
         }, function(err, data) {
             if (err) {
                 done(err);

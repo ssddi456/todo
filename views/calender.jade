@@ -1,28 +1,20 @@
 include ./includes/nav.jade
 extends ./layout.jade
 
-mixin show_all_radio(value)
-  label.btn.btn-default(:class="{'active' : show_all == '#{value}' }")
-    input(type="radio",
-        name="show_all", 
-        value="#{value}", 
-        :checked="show_all"
-        @click="switch_show_all")
-    block
 
 append content 
   +nav('/calender')
     .btn-toolbar
       .btn-group
-        .btn.btn-default(@click="add_task") 
+        .btn.btn-default(@click="add_event") 
           i.glyphicon.glyphicon-file
           span 新增事件
 
   #main
-    .calender
+    .calender.container
       .week(v-for="week in weeks") 
         .day(v-for="day in week", 
-            :class="{today: day.is_today}"
+            :class="{today: day.is_today, active: select_day == day}"
             @click="select_day = day")
           .day_info
             small
@@ -30,17 +22,22 @@ append content
             div
               | {{day.display_day}} {{day.is_today? '今天' : ''}}
             .day_events(v-if="day.events.length > 0")
-              {{day.events.length}}
+              | {{day.events.length}}
 
-    .container-fluid(v-if="select_day")
+    .container(v-if="select_day")
       ul.list-group
-        li.list-group-item(v-for="event in select_day.events")
-          a.btn.btn-default.btn-xs.pull-right(href="javascript:void(0)", 
-            v-if="today == select_day"
-            @click="person.finish.bind(person)(event)",
-            :class="{disabled: person.finish_events.indexOf(event) !== -1}")
-            | finish
-          | {{event.name}}
+        li.list-group-item.clearfix(v-for="event in select_day.events")
+          .btn-toolbar.pull-right
+            .btn-group
+              a.btn.btn-default.btn-xs(href="javascript:void(0)", 
+                @click="edit_event(event)")
+                | edit
+              a.btn.btn-default.btn-xs(href="javascript:void(0)", 
+                v-if="today == select_day"
+                @click="person.finish.bind(person)(event)",
+                :class="{disabled: person.finish_events.indexOf(event) !== -1}")
+                | finish
+          | {{event.name}} {{event.background}}
 
   include ./includes/calender_event_edit.jade
 

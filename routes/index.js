@@ -36,17 +36,17 @@ var task_model = model({
 
     create_at: {
         readonly: true,
-        initial: Infinity
+        initial: 0
     },
 
     lastest_update: {
         readonly: true,
-        initial: Infinity
+        initial: 0
     },
 
     finished_at: {
         readonly: true,
-        initial: Infinity
+        initial: 0
     },
     status_change: {
         readonly: true,
@@ -78,7 +78,7 @@ var task_progress_model = model({
 
     lastest_update: {
         readonly: true,
-        initial: Infinity
+        initial: 0
     },
 
     finished_at: {

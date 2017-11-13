@@ -1,33 +1,99 @@
+- var day_names = ['星期天','星期一','星期二','星期三','星期四','星期五','星期六'];
+- var month_names = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+- var weeks = ['第一周','第二周', '第三周','第四周'];
+- var dates = [];
+- (function(){ for(var i = 1; i < 32; i++) { dates.push(i); } })();
+
+mixin toggle_checkbox_arr(arr, value)
+  label&attributes(attributes)
+    input(type="checkbox",
+      :checked="check_if_checked(#{arr}, '#{value}')",
+      @change="toggle_checkbox_arr(#{arr}, '#{value}', $event)")
+    block
+
 #calender_event_edit.modal(role='dialog', tabindex='-1')
   .modal-dialog(role='document')
     .modal-content
       .modal-header
         button.close(type='button', data-dismiss='modal', aria-label='Close')
           span(aria-hidden='true') ×
-        h4.modal-title 编辑进度
+        h4.modal-title 事件
       .modal-body
         .form
           .form-group
-            input.form-control(type='text', placeholder='进度', name="content")
+            input.form-control(type='text', placeholder='进度', name="name")
           .form-group
-            label 预估完成时间
-              - var now = new Date(Date.now());
-              - var p1day = new Date(Date.now() + 24*60*60*1e3);
-              - var fixlen2 = function(n){ return (n/100).toFixed(2).slice(2);};
-              - var now_date = now.getFullYear() + '-'+ fixlen2(now.getMonth() + 1) + '-' + fixlen2(now.getDate());
-              - var p1day_date = p1day.getFullYear() + '-'+ fixlen2(p1day.getMonth() + 1) + '-' + fixlen2(p1day.getDate());
-            .input-group.date(
-                data-provide="datepicker",
-                data-date-autoclose="true",
-                data-date-format="yyyy-mm-dd",
-                data-date-start-date="#{now_date}")
-              input.form-control(
-                type='text', 
-                value="#{p1day_date}",
-                placeholder='deadline', 
-                name="deadline")
-              .input-group-addon
-                span.glyphicon.glyphicon-th
+            input.form-control(type='text', placeholder='背景', name="background")
+          .form-group
+            .input-group
+              input.form-control(type='text', placeholder='奖励', name="reward_name")
+              .input-group-addon x
+              input.form-control(type='text', placeholder='数目', name="reward_number")
+          .form-group
+            ul.nav.nav-tabs
+              li(:class="{active: tab == 'day'}",
+                @click="tab='day', schedular={day:'1'}")
+                a(href='javascript:void(0);') 天
+              li(:class="{active: tab == 'week'}",
+                @click="tab='week', schedular={week:{weeks:'1', weekdays:['1']}}")
+                a(href='javascript:void(0);') 周
+              li(:class="{active: tab == 'month'}",
+                @click="tab='month',schedular={month:{months:['1'], dates:['1']}}")
+                a(href='javascript:void(0);') 月
+
+            .tab-content
+              .tab-pane(:class="{active: tab == 'day'}", v-if="schedular.day")
+                .form
+                  .form-group
+                    .input-group(style="width:220px;")
+                      .input-group-addon 每
+                      input.form-control(type='text', 
+                        v-model="schedular.day")
+                      .input-group-addon 天一次
+              .tab-pane(:class="{active: tab == 'week'}",v-if="schedular.week")
+                .form
+                  .form-group
+                    .input-group(style="width:220px;")
+                      .input-group-addon 每
+                      input.form-control(type='text', 
+                        v-model="schedular.week.weeks")
+                      .input-group-addon 周
+                  .form-group
+                    each day_name, idx in day_names
+                      +toggle_checkbox_arr('schedular.week.weekdays', idx)
+                        = day_name
+
+              .tab-pane(:class="{active: tab == 'month'}",v-if="schedular.month")
+                .form
+                  .form-group
+                    each month_name, idx in month_names
+                      +toggle_checkbox_arr('schedular.month.months', idx+1)
+                        = month_name
+                  .form-group
+                    label
+                      input(type="radio", name="month_type"
+                        value="date",
+                        v-model="month_type")
+                      | 按日
+                    label
+                      input(type="radio", name="month_type",
+                        value="week",
+                        v-model="month_type")
+                      | 按周
+                  .form-group(v-if="schedular.month.dates")
+                    each day_name, idx in day_names
+                      +toggle_checkbox_arr('schedular.month.dates', idx)
+                        = day_name
+
+                  .form-group(v-if="!schedular.month.dates")
+                    each week, idx in weeks
+                      +toggle_checkbox_arr('schedular.month.week.weeks', idx + 1)
+                        = week
+
+                  .form-group(v-if="!schedular.month.dates")
+                    each day_name, idx in day_names
+                      +toggle_checkbox_arr('schedular.month.week.weekdays', idx)
+                        = day_name
 
       .modal-footer
         button.btn.btn-default(type='button', data-dismiss='modal') 取消

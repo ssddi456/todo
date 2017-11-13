@@ -8,6 +8,10 @@ define([
     function modal(id) {
 
         var $el = $(id);
+        var source = $el.get(0)
+        if( source ){
+            source = source.outerHTML;
+        }
         var $body = $el.find('.modal-body');
         var $edits = $body.find('input,textarea');
 
@@ -35,6 +39,21 @@ define([
         function close() {
             $el.stop().fadeOut();
             last_callback = null;
+            // for vue redraw
+            if (last_optns.vm && last_optns.vm.$destroy) {
+                last_optns.vm.$destroy(false);
+
+                var $nel = $(source)
+                $el.replaceWith($nel);
+
+                $el = $nel;
+                $body = $el.find('.modal-body');
+                $edits = $body.find('input,textarea');
+
+                $el.on('click', '[data-dismiss="modal"]', close);
+                $el.on('click', '[data-label="confirm"]', confirm);
+            }
+
             last_optns = null;
         }
 

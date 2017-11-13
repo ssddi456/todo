@@ -1,8 +1,10 @@
 define([
+  './task_progress_model',
   '../postChannel',
   '../util',
   './model'
 ], function(
+  task_progress_model,
   postchannel,
   util,
   model
@@ -31,17 +33,17 @@ define([
 
     create_at: {
       readonly: true,
-      initial: Infinity
+      initial: 0
     },
 
     lastest_update: {
       readonly: true,
-      initial: Infinity
+      initial: 0
     },
 
     finished_at: {
       readonly: true,
-      initial: Infinity
+      initial: 0
     },
 
     status_change: {
@@ -201,7 +203,7 @@ define([
         data = data.data;
 
         var args = [0, self.histories.length].concat(data.map(function(node) {
-          return new task_progress(node);
+          return new task_progress_model(node);
         }));
 
         self.histories.splice.apply(self.histories, args);
@@ -244,7 +246,7 @@ define([
 
   tp.add_progress = function(progress, done) {
     var self = this;
-    progress = new task_progress(progress);
+    progress = new task_progress_model(progress);
     progress.parent_id = this.id;
     progress.save(function(err) {
       if (err) {

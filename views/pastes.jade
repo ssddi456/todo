@@ -14,7 +14,7 @@ append content
     .container-fluid
       .list-group
         li.list-group-item(v-for="paste in pastes", @click="copy_paste(paste)")
-          {{ paste.content }}
+          | {{ paste.content }}
 
   include ./includes/paste_add.jade
 

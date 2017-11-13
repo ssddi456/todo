@@ -23,7 +23,7 @@ define([
 
     create_at: {
       readonly: true,
-      initial: Infinity,
+      initial: 0,
     },
 
     visible: {
@@ -42,10 +42,34 @@ define([
   });
 
   var cemp = calender_event_model.prototype;
-  cemp.finish = function( person ) {
-      person[this.reward_name] = person[this.reward_name] || 0;
-      person[this.reward_name] += this.reward_number;
+  cemp.finish = function(person) {
+    person[this.reward_name] = person[this.reward_name] || 0;
+    person[this.reward_name] += this.reward_number;
   }
+
+  cemp.save = function(done) {
+    var self = this;
+    done = done || noop;
+    postchannel({
+      method: 'POST',
+      command: '/calender/save',
+      data: this.toJSON(),
+    }, function(err, data) {
+      if (err) {
+        done(err);
+      } else {
+
+        if (!self.id && data.data) {
+          self.id = data.data.id;
+        }
+        if (!self.create_at && data.data) {
+          self.create_at = data.data.create_at;
+        }
+
+        done();
+      }
+    });
+  };
 
   // {
   //   day: nth_of_day,
