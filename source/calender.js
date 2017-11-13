@@ -61,12 +61,12 @@ require([
           var day = {
             date_info: day_date,
             time: day_date.getTime(),
-            day: dayCount,
+            day: dayCount + '',
             display_day: day_names[dayCount],
-            date: day_date.getDate(),
+            date: day_date.getDate() + '',
             display_date: '',
-            month: day_date.getMonth() + 1,
-            year: day_date.getFullYear(),
+            month: day_date.getMonth() + '',
+            year: day_date.getFullYear() + '',
             events: [],
             is_today: false,
           };
