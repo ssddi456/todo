@@ -69,8 +69,13 @@ require([
             year: day_date.getFullYear() + '',
             events: [],
             is_today: false,
+            is_past: false,
           };
           day.display_date = day.month + '-' + day.date;
+
+          if(day.time < today_date.getTime()){
+            day.is_past = true;
+          }
 
           if (
             day_date.getFullYear() === today_date.getFullYear() &&

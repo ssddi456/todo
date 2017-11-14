@@ -11,33 +11,39 @@ append content
           span 新增事件
 
   #main
-    .calender.container
-      .week(v-for="week in weeks") 
-        .day(v-for="day in week", 
-            :class="{today: day.is_today, active: select_day == day}"
-            @click="select_day = day")
-          .day_info
-            small
-              | {{day.display_date}}
-            div
-              | {{day.display_day}} {{day.is_today? '今天' : ''}}
-            .day_events(v-if="day.events.length > 0")
-              | {{day.events.length}}
+    .container
+      .row
+        .col-md-6
+          .calender
+            .week(v-for="week in weeks") 
+              .day(v-for="day in week", 
+                  :class="{today: day.is_today, active: select_day == day}"
+                  @click="select_day = day")
+                .day_info
+                  small
+                    | {{day.display_date}}
+                  div
+                    | {{day.display_day}} 
+                  div
+                    | {{day.is_today? '今天' : ''}}
+                  .day_events(v-if="day.events.length > 0 && !day.is_past")
+                    | {{day.is_today ? day.events.length : ''}}
 
-    .container(v-if="select_day")
-      ul.list-group
-        li.list-group-item.clearfix(v-for="event in select_day.events")
-          .btn-toolbar.pull-right
-            .btn-group
-              a.btn.btn-default.btn-xs(href="javascript:void(0)", 
-                @click="edit_event(event)")
-                | edit
-              a.btn.btn-default.btn-xs(href="javascript:void(0)", 
-                v-if="today == select_day"
-                @click="person.finish.bind(person)(event)",
-                :class="{disabled: person.finish_events.indexOf(event) !== -1}")
-                | finish
-          | {{event.name}} {{event.background}}
+        .col-md-6
+          div(v-if="select_day")
+            ul.list-group
+              li.list-group-item.clearfix(v-for="event in select_day.events")
+                .btn-toolbar.pull-right
+                  .btn-group
+                    a.btn.btn-default.btn-xs(href="javascript:void(0)", 
+                      @click="edit_event(event)")
+                      | edit
+                    a.btn.btn-default.btn-xs(href="javascript:void(0)", 
+                      v-if="today == select_day"
+                      @click="person.finish.bind(person)(event)",
+                      :class="{disabled: person.finish_events.indexOf(event) !== -1}")
+                      | finish
+                | {{event.name}} {{event.background}}
 
   include ./includes/calender_event_edit.jade
 
