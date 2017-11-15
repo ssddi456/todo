@@ -251,6 +251,26 @@ require([
         },
       },
     });
-
+    
     main_vm.init_calender();
+
+    function renew_today () {
+        var today_date = new Date();
+        var next_date =  new Date(today_date.getTime());
+        next_date.setDate(next_date.getDate() + 1);
+        next_date = new Date( next_date.getFullYear(), next_date.getMonth(), next_date.getDate());
+        var to_next_day = next_date.getTime() - today_date.getTime();
+
+        setTimeout(function() {
+          weeks.splice(0, weeks.length);
+          days.splice(0, weeks.length);
+          setup_weeks();
+          setTimeout(function() {
+            renew_today();
+          }, 100);
+        }, to_next_day);
+    }
+
+    renew_today();
+
   });
