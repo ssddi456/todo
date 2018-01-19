@@ -255,7 +255,9 @@ require([
           var self = this;
           $.get('/change_of_week', function( data ) {
             if(data.data){
-              data.data.sort().forEach(function( event ) {
+              data.data.sort(function(a, b) {
+                  return a.status > b.status ? 1: a.status == b.status? 0 : -1;
+              }).forEach(function( event ) {
                 self.events_of_the_week.push(event);
               });
             }
