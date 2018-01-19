@@ -12,6 +12,13 @@ append content
 
   #main
     .container
+      .panel.panel-info
+        .panel-heading 本周事件
+        .panel-body
+          ul.list-group
+            .list-group-item(v-for="event in events_of_the_week")
+              [{{event.status}}] {{event.content}} 
+
       .row
         .col-md-6
           .calender

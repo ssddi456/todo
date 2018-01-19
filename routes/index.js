@@ -380,3 +380,42 @@ router.get('/tasks/load_history', function(req, resp, next) {
     });
 
 });
+
+
+
+var day = 24 * 60 * 60 * 1000;
+router.get('/change_of_week', function(req, resp, next) {
+    var today = new Date();
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    var weekday = today.getDay();
+    var startOfWeek = new Date(today.getTime() - weekday * day + 1).getTime();
+    var endOfWeek = new Date(today.getTime() + (7 - weekday) * day - 1).getTime();
+
+    task_progress_store.find({
+        $or: [{
+            create_at: {
+                $gte: startOfWeek,
+                $lte: endOfWeek
+            }
+        }, {
+            lastest_update: {
+                $gte: startOfWeek,
+                $lte: endOfWeek
+            }
+        }, {
+            deadline: {
+                $gte: startOfWeek,
+                $lte: endOfWeek
+            }
+        }, ]
+    }, function(err, doc) {
+        if (!err) {
+            resp.json({
+                err: 0,
+                data: doc.map(wrap_task_progress)
+            });
+        } else {
+            next(err);
+        }
+    });
+});

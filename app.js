@@ -43,8 +43,8 @@ debug = debug(debug_name);
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
 var express = require('express');
+var baseAuth = require('./libs/base-auth');
 
 var fs = require('fs');
 var path = require('path');
@@ -63,9 +63,6 @@ app.get('/favicon.ico', function( req, resp ) {
 
 app.use('/source',express.static(path.join(__dirname,'./source')));
 app.use('/public',express.static(path.join(__dirname,'./public')));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 var less_folder =  path.join(__dirname,'skin');
 app.get('/skin/:styles',function(req,resp, next) {
@@ -102,6 +99,9 @@ var routes = require('./routes');
 var pastes = require('./routes/pastes');
 var calender = require('./routes/calender');
 
+app.use(baseAuth);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(routes);
 app.use('/pastes', pastes);
 app.use('/calender', calender);

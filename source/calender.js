@@ -65,7 +65,7 @@ require([
             display_day: day_names[dayCount],
             date: day_date.getDate() + '',
             display_date: '',
-            month: day_date.getMonth() + '',
+            month: (day_date.getMonth() + 1) + '',
             year: day_date.getFullYear() + '',
             events: [],
             is_today: false,
@@ -196,6 +196,8 @@ require([
         weeks: weeks,
         select_day: today,
         person: person,
+
+        events_of_the_week: []
       },
       mixins: [],
       methods: {
@@ -249,10 +251,21 @@ require([
             }
           })
         },
+        init_events: function() {
+          var self = this;
+          $.get('/change_of_week', function( data ) {
+            if(data.data){
+              data.data.sort().forEach(function( event ) {
+                self.events_of_the_week.push(event);
+              });
+            }
+          });
+        }
       },
     });
     
     main_vm.init_calender();
+    main_vm.init_events();
 
     function renew_today () {
         var today_date = new Date();
