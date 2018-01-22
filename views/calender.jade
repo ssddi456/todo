@@ -16,7 +16,9 @@ append content
         .panel-heading 本周事件
         ul.list-group
           .list-group-item(v-for="event in events_of_the_week")
-            [{{event.status}}] {{event.content}} 
+            | [{{event.status}}] 
+            a(:href="'/task/' + event.parent_id") [{{event.task_name}}] 
+            | {{event.content}} 
 
       .row
         .col-md-6

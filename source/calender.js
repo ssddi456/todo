@@ -256,7 +256,11 @@ require([
           $.get('/change_of_week', function( data ) {
             if(data.data){
               data.data.sort(function(a, b) {
-                  return a.status > b.status ? 1: a.status == b.status? 0 : -1;
+                  if( a.parent_id == b.parent_id ){
+                    return a.status > b.status ? 1: a.status == b.status? 0 : -1;
+                  } else {
+                    return a.parent_id > b.parent_id ? 1: -1;
+                  }
               }).forEach(function( event ) {
                 self.events_of_the_week.push(event);
               });

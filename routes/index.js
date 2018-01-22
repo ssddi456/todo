@@ -7,7 +7,8 @@ if (debug_name == 'index') {
     process.env.DEBUG = '*';
 })()
 var debug = require('debug')(debug_name);
-
+var async = require('async');
+var mongodb = require('mongodb');
 
 var express = require('express');
 var router = module.exports = express.Router();
@@ -18,6 +19,7 @@ var task_store = storage('tasks', 'tasks');
 var task_progress_store = storage('tasks', 'task_progress');
 var mongodb = require('mongodb');
 var model = require('../libs/model');
+var _ = require('underscore');
 
 var task_model = model({
     name: '',
@@ -391,28 +393,60 @@ router.get('/change_of_week', function(req, resp, next) {
     var startOfWeek = new Date(today.getTime() - weekday * day + 1).getTime();
     var endOfWeek = new Date(today.getTime() + (7 - weekday) * day - 1).getTime();
 
-    task_progress_store.find({
-        $or: [{
-            create_at: {
-                $gte: startOfWeek,
-                $lte: endOfWeek
-            }
-        }, {
-            lastest_update: {
-                $gte: startOfWeek,
-                $lte: endOfWeek
-            }
-        }, {
-            deadline: {
-                $gte: startOfWeek,
-                $lte: endOfWeek
-            }
-        }, ]
-    }, function(err, doc) {
+    async.waterfall([
+        function(done) {
+            task_progress_store.find({
+                $or: [{
+                    create_at: {
+                        $gte: startOfWeek,
+                        $lte: endOfWeek
+                    }
+                }, {
+                    lastest_update: {
+                        $gte: startOfWeek,
+                        $lte: endOfWeek
+                    }
+                }, {
+                    deadline: {
+                        $gte: startOfWeek,
+                        $lte: endOfWeek
+                    }
+                }, ]
+            }, done);
+        },
+        function(docs, done) {
+            var task_ids = _.uniq(docs.map(function(doc) {
+                return mongodb.ObjectId(doc.parent_id);
+            }));
+
+            task_store.find({
+                _id: {
+                    $in: task_ids
+                }
+            }, function(err, tasks) {
+                done(err, tasks, docs);
+            });
+        },
+        function(tasks, docs, done) {
+            docs.forEach(function(doc) {
+                for (var i = 0; i < tasks.length; i++) {
+                    if (doc.parent_id == tasks[i]._id) {
+                        doc.task_name = tasks[i].name;
+                    }
+                }
+            });
+
+            done(null, docs);
+        }
+    ], function(err, doc) {
         if (!err) {
             resp.json({
                 err: 0,
-                data: doc.map(wrap_task_progress)
+                data: doc.map(function( doc ) {
+                    var ret = wrap_task_progress(doc);
+                    ret.task_name = doc.task_name;
+                    return ret;
+                })
             });
         } else {
             next(err);
