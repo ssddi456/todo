@@ -214,21 +214,51 @@ define([
 
   tp.get_time_scale = function() {
     // 定义域
-    var start = this.create_at;
+    var start = this.create_at || 0;
     var end = Date.now();
+    var allProcessFinished = true;
+    var latestTime = 0;
+
     this.histories.forEach(function(progress) {
-      progress = progress.toJSON();
+
+      if(progress.status != 'finished' ) {
+        allProcessFinished = false;
+      }
+
       var deadline = progress.deadline;
       if (deadline) {
-        end = Math.max(end, deadline);
+        latestTime = Math.max(latestTime, deadline);
       }
-      var deadline_change = progress.deadline_change;
+
+      if (start === 0 && (progress.create_at || 0) !== 0) {
+        start = progress.create_at;
+      }
+
+      if (progress.create_at) {
+        start = Math.min(start, progress.create_at);
+      }
+
+      var deadline_change = progress.deadline_change || {};
       for (var k in deadline_change) {
         if (deadline_change.hasOwnProperty(k)) {
-          end = Math.max(end, deadline_change[k]);
+          latestTime = Math.max(latestTime, deadline_change[k]);
+        }
+      }
+
+      var status_change = progress.status_change || {};
+      for (var k in status_change) {
+        if (status_change.hasOwnProperty(k)) {
+          latestTime = Math.max(latestTime, parseInt(k));
         }
       }
     });
+
+    if(latestTime === 0){
+      latestTime = Date.now();
+    }
+    if(allProcessFinished) {
+      end = Math.max(start + 1, latestTime);
+    }
 
     var define_delta = end - start;
 

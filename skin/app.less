@@ -69,10 +69,12 @@
 
 @time_info_lineheight: 18px;
 @time_info_dot_border_size: 2px;
-
+@time_info_stop_size: 8px;
 .time_info_wrapper{
   position: relative;
   height: @time_info_lineheight;
+  margin-top: @time_info_stop_size;
+  margin-bottom: @time_info_stop_size;
 }
 .time_info_bg{
   height: @time_info_lineheight/2;
@@ -97,39 +99,32 @@
     &:before{
       content: '';
       position: absolute;
-      clip: rect(0px, @time_info_lineheight, 0.5*@time_info_lineheight, 0px);
 
-      right: -0.5 * @time_info_lineheight;
-      top: 0;
-      border: @time_info_dot_border_size solid green;
-      border-radius: 0.5 * @time_info_lineheight;
-      height: @time_info_lineheight;
-      width: @time_info_lineheight;
+      right: -0.5 * @time_info_stop_size;
+      top: -1 * @time_info_stop_size;
+      border-top: @time_info_stop_size solid green;
+      border-left: 0.5 * @time_info_stop_size solid transparent;
+      border-right: 0.5 * @time_info_stop_size solid transparent;
+      border-bottom: 0;
+      height: 0;
+      width: 0;
     }
 
-    &:after{
-      content: '';
-      position: absolute;
-      clip: rect(0px, @time_info_lineheight, 0.5*(@time_info_lineheight - @time_info_dot_border_size), 0px);
 
-      right: -0.5 * @time_info_lineheight + @time_info_dot_border_size;
-      top: @time_info_dot_border_size;
-      border: 2px solid white;
-      border-radius: 0.5 * @time_info_lineheight - @time_info_dot_border_size;
-      height: @time_info_lineheight - 2 * @time_info_dot_border_size;
-      width: @time_info_lineheight - 2 * @time_info_dot_border_size;
-    }
 
     &.start_stop:after{
-      background-color: blue;
+      border-top-color: blue;
+      border-bottom-color: blue;
     }
 
     &.edit_stop:after{
-      background-color: blue;
+      border-top-color: blue;
+      border-bottom-color: blue;
     }
 
     &.finished_stop:after{
-      background-color: green;
+      border-top-color: green;
+      border-bottom-color: green;
     }
   }
   &.deadline {
@@ -138,25 +133,18 @@
       z-index: 1;
 
       &:before {
-        clip: rect(0.5*@time_info_lineheight, @time_info_lineheight, @time_info_lineheight, 0px);
-      }
-
-      &:after{
-        clip: rect(0.5*@time_info_lineheight - @time_info_dot_border_size, @time_info_lineheight, @time_info_lineheight, 0px);
+        border-top-width: 0;
+        border-bottom-width: @time_info_stop_size;
       }
 
       &.prev_deadline_stop:before{
-        border-color: pink;
-      }
-      &.prev_deadline_stop:after{
-        background-color: pink;
+        border-top-color: pink;
+        border-bottom-color: pink;
       }
 
       &.deadline_stop:before{
-        border-color: red;
-      }
-      &.deadline_stop:after{
-        background-color: red;
+        border-top-color: red;
+        border-bottom-color: red;
       }
     }
   }
