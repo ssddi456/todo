@@ -29,8 +29,9 @@ require([
 
     var color_map = {
         'start': 'white',
-        'finished': 'green',
-        'edit': '#388bb3',
+        'finished': '#97ec71',
+        'edit': '#4fc5c7',
+        'delay': '#de9dd6'
     };
 
     main_vm.task.init(function() {
@@ -47,6 +48,8 @@ require([
                     .map(Number)
                     .filter(Boolean)
 
+
+                var deadline = new Date(task_progress.deadline).getTime();
 
                 var times = [{
                         time: start,
@@ -68,6 +71,27 @@ require([
                         node.label = util.format_date(node.time) + ' ' + node.type;
                         return node;
                     });
+
+
+                if(deadline && times.length && times.slice(-1)[0].time > deadline) {
+                    var afterDeadline = false;
+                    for(var i =0; i< times.length; i ++){
+                        if(!afterDeadline && times[i].time > deadline) {
+                            afterDeadline = true
+                            times.splice(i - 1, 0, 
+                                {
+                                    time:deadline,
+                                    type:times[i].type,
+                                    percent: scale(deadline),
+                                    bgc: times[i].bgc,
+                                    label: times[i].label,
+                                });
+                        } 
+                        if (afterDeadline) {
+                            times[i].bgc = color_map['delay'];
+                        }
+                    }
+                }
 
                 task_progress.time_info = times;
                 var deadline_info = task_progress.deadline_info = [];
