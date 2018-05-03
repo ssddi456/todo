@@ -227,7 +227,7 @@ define([
 
       var deadline = progress.deadline;
       if (deadline) {
-        latestTime = Math.max(latestTime, deadline);
+        latestTime = Math.max(latestTime, new Date(deadline).getTime());
       }
 
       if (start === 0 && (progress.create_at || 0) !== 0) {
@@ -241,7 +241,7 @@ define([
       var deadline_change = progress.deadline_change || {};
       for (var k in deadline_change) {
         if (deadline_change.hasOwnProperty(k)) {
-          latestTime = Math.max(latestTime, deadline_change[k]);
+          latestTime = Math.max(latestTime, parseInt(k));
         }
       }
 
@@ -256,10 +256,13 @@ define([
     if(latestTime === 0){
       latestTime = Date.now();
     }
+
     if(allProcessFinished) {
       end = Math.max(start + 1, latestTime);
+    } else {
+      end = Math.max(end, latestTime);
     }
-
+    
     var define_delta = end - start;
 
     // 值域

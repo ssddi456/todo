@@ -9,7 +9,7 @@ append content
   #main.container
     include ./includes/task.jade
 
-      .row
+      div
         .col-xs-12.time_info_wrapper
           .time_info(v-if="progress.time_info")
             div(v-if="progress.status != 'finished'",)
@@ -20,7 +20,7 @@ append content
                 :class="[_time_info.type + '_stop']"
                 v-bind:title="_time_info.label")
             div &nbsp;
-          .time_info.deadline
+          .time_info_deadline
             .time_stop(
                 v-for="_time_info in progress.deadline_info",
                 :style="{ width: _time_info.percent + '%' }",
