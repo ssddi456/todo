@@ -76,9 +76,10 @@ require([
                 if(deadline && times.length && times.slice(-1)[0].time > deadline) {
                     var afterDeadline = false;
                     for(var i =0; i< times.length; i ++){
-                        if(!afterDeadline && times[i].time > deadline) {
+                        if(!afterDeadline && times[i].time <= deadline 
+                            && times[i+1] && times[i+1].time > deadline ) {
                             afterDeadline = true
-                            times.splice(i - 1, 0, 
+                            times.splice(i, 0, 
                                 {
                                     time:deadline,
                                     type:times[i].type,

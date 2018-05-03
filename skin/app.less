@@ -84,12 +84,16 @@
   margin-bottom: @time_info--stop_size;
 }
 .time_info_bg{
+
   height: @time_info--lineheight/2;
   background: @time_info--yellow;
   position:absolute;
   top:0;
   left:0;
   right:0;
+  &.delay{
+    background: @time_info--pink;  
+  }
 }
 .time_info{
   position:relative;

@@ -13,7 +13,7 @@ append content
         .col-xs-12.time_info_wrapper
           .time_info(v-if="progress.time_info")
             div(v-if="progress.status != 'finished'",)
-              .time_info_bg
+              .time_info_bg(:class="[ (progress.deadline && Date.now() > new Date(progress.deadline).getTime() )? 'delay': '']")
             .time_stop(
                 v-for="_time_info in progress.time_info",
                 :style="{ width: _time_info.percent + '%', background: _time_info.bgc }",
