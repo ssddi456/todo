@@ -64,33 +64,44 @@ require([
                         return b.time - a.time;
                     })
                     .map(function(node) {
-                        console.log(node);
-
                         node.percent = scale(node.time);
                         node.bgc = color_map[node.type];
                         node.label = util.format_date(node.time) + ' ' + node.type;
                         return node;
                     });
+                // it is a desc sort
+                console.log(task_progress.content, deadline, times.length, times[0].time, times[0].time > deadline);
+                if (deadline && times.length && times[0].time > deadline) {
 
+                    console.log('check delay', task_progress.content);
+                    for (var i = times.length - 1; i >= 0; i--) {
+                        var current = times[i];
+                        var current_bgc = current.bgc;
+                        console.log('finding a delay', i, times.length,
+                            current && current.time > deadline,
+                            times[i + 1] && times[i + 1].time <= deadline);
 
-                if(deadline && times.length && times.slice(-1)[0].time > deadline) {
-                    var afterDeadline = false;
-                    for(var i =0; i< times.length; i ++){
-                        if(!afterDeadline && times[i].time <= deadline 
-                            && times[i+1] && times[i+1].time > deadline ) {
-                            afterDeadline = true
-                            times.splice(i, 0, 
-                                {
-                                    time:deadline,
-                                    type:times[i].type,
-                                    percent: scale(deadline),
-                                    bgc: times[i].bgc,
-                                    label: times[i].label,
-                                });
-                        } 
-                        if (afterDeadline) {
-                            times[i].bgc = color_map['delay'];
+                        if (current && current.time > deadline &&
+                            times[i + 1] && times[i + 1].time <= deadline
+                        ) {
+
+                            afterDeadline = true;
+                            console.log(j);
+                            for (var j = i; j >= 0; j--) {
+                                times[j].bgc = color_map['delay'];
+                            }
+
+                            times.splice(i + 1, 0, {
+                                time: deadline,
+                                type: current.type,
+                                percent: scale(deadline),
+                                bgc: current_bgc,
+                                label: current.label,
+                            });
+
+                            break;
                         }
+
                     }
                 }
 
@@ -112,9 +123,6 @@ require([
                         });
                     }
                 }
-
-                console.log(times);
-
             });
 
             main_vm.task.histories = main_vm.task.histories.sort(function(a, b) {

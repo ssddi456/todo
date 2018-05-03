@@ -272,7 +272,6 @@ define([
 
     return function(input_time) {
       var delta = input_time - start;
-      console.log(delta, define_delta, Math.floor(delta / define_delta));
       return Math.floor(delta / define_delta * value_delta) + min;
     }
   };

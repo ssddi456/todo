@@ -25,7 +25,6 @@ define([
       clearTimeout(toast_fadeout_timer);
     }
     toast_fadeout_timer = setTimeout(function () {
-      console.log( 'fadeOut!!!!');
       $toast.fadeOut(100);
     }, 2e3);
 

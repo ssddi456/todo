@@ -101,7 +101,7 @@ require([
             console.log(err);
             return;
           }
-          console.log( tasks );
+
           util.insert_into_arr(self.tasks, 0, self.tasks.length, tasks);
 
           tasks.forEach(function(task) {
